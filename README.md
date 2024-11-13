@@ -7,7 +7,7 @@ The application is a social platform where users can share, review, and discuss 
 
 
 ## How to Run
-Use .env file and dotenv module to load database credentials
-DB_USER="your_username"
-DB_PASSWORD="your_password"
-DB_SERVER="your_server"
+Use .env file and dotenv module to load database credentials\\
+DB_USER="your_username"\\
+DB_PASSWORD="your_password"\\
+DB_SERVER="your_server"\\
