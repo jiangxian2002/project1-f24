@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1>Following</h1>
+<div class="user-list">
+    {% for user in following %}
+        <div class="user-card">
+            <p><strong>{{ user.username }}</strong></p>
+            <p>{{ user.bio }}</p>
+            <p>{{ user.city }}</p>
+            <a href="/user/{{ user.user_id }}">View Profile</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

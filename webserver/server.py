@@ -75,7 +75,7 @@ def index():
 @login_required
 def search():
     search_entry_ori = request.args.get('search-entry', '')
-    search_entry= search_entry_ori.lower()
+    search_entry = search_entry_ori.lower()
     print("getting a search entry")
     print(search_entry)
 
@@ -87,7 +87,6 @@ def search():
             WHERE LOWER(title) LIKE :search_entry
         """), {'search_entry': f"%{search_entry}%"}).mappings()
         
-        # Organize data as a list of dictionaries for easy access in the template
         musicals = [
             {
                 'title': row['title'],
@@ -138,19 +137,40 @@ def account():
     return render_template('account.html', user=user, 
                            followers_count=followers_count, followed_count=followed_count)
 
-# Example of adding new data to the database
-@app.route('/add', methods=['POST'])
+@app.route('/user/followers')
 @login_required
-def add():
-    name = request.form.get('name')
-    print(name)
-    if name:
-        cmd = 'INSERT INTO test(name) VALUES (:name)'
-        g.conn.execute(text(cmd), {'name': name})
-        g.conn.commit()
-    return redirect('/')
+def view_followers():
+    user_id = session['user_id']
+    # Query to fetch followers of the given user
+    query = text("""
+        SELECT u.user_id, u.username, u.bio, u.city
+        FROM follows f
+        JOIN users u ON f.follower_id = u.user_id
+        WHERE f.followed_id = :user_id
+    """)
+    followers = g.conn.execute(query, {'user_id': user_id}).fetchall()
+
+    # Render the followers page with the followers list
+    return render_template('followers.html', followers=followers)
+
+@app.route('/user/following')
+@login_required
+def view_following():
+    user_id = session['user_id']
+    # Query to fetch users that the given user is following
+    query = text("""
+        SELECT u.user_id, u.username, u.bio, u.city
+        FROM follows f
+        JOIN users u ON f.followed_id = u.user_id
+        WHERE f.follower_id = :user_id
+    """)
+    following = g.conn.execute(query, {'user_id': user_id}).fetchall()
+
+    # Render the following page with the following list
+    return render_template('following.html', following=following)
 
 
+### Login and Register routes
 @app.route("/login", methods=["GET", "POST"])
 def login():
     session.clear()
@@ -225,18 +245,18 @@ def register():
         return render_template('register.html')
 
 if __name__ == "__main__":
-  import click
+    import click
 
-  @click.command()
-  @click.option('--debug', is_flag=True)
-  @click.option('--threaded', is_flag=True)
-  @click.argument('HOST', default='0.0.0.0')
-  @click.argument('PORT', default=8111, type=int)
-  def run(debug, threaded, host, port):
+    @click.command()
+    @click.option('--debug', is_flag=True)
+    @click.option('--threaded', is_flag=True)
+    @click.argument('HOST', default='0.0.0.0')
+    @click.argument('PORT', default=8111, type=int)
+    
+    def run(debug, threaded, host, port):
 
-    HOST, PORT = host, port
-    print("running on %s:%d" % (HOST, PORT))
-    app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
+        HOST, PORT = host, port
+        print("running on %s:%d" % (HOST, PORT))
+        app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
 
-
-  run()
+run()

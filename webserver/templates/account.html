@@ -6,21 +6,26 @@
         <h1>{{ user.username }}</h1>
         <p>Email: {{ user.email }}</p>
         {% if user.bio %}
-            <p>Bio: {{ user.bio }}</p>
+                <p>Bio: {{ user.bio }}</p>
+                <button id="edit-profile-btn">Edit Bio</button>
+        {% else %}
+                <p>Bio: <em>No bio yet</em></p>
+                <button id="edit-profile-btn">Add Bio</button>
         {% endif %}
         {% if user.city %}
-            <p>City: {{ user.city }}</p>
+                <p>City: {{ user.city }}</p>
+                <button id="edit-profile-btn">Edit City</button>
+        {% else %}
+                <p>City: <em>No city yet</em></p>
+                <button id="edit-profile-btn">Add City</button>
         {% endif %}
-        <p>Followers: {{ followers_count }}</p>
-        <p>Following: {{ followed_count }}</p>
+        <a href="/user/followers">
+                Followers: {{ followers_count }}
+        </a> | 
+        <a href="/user/following">
+                Following: {{ followed_count }}
+        </a>
     </div>
-
-    <!-- Bio Update Form -->
-    <form action="/update_bio" method="POST">
-        <label for="bio">Update Bio:</label>
-        <textarea name="bio" id="bio" rows="3">{{ user.bio }}</textarea>
-        <button type="submit">Save Bio</button>
-    </form>
 </section>
 
 <form>

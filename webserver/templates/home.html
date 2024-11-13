@@ -14,18 +14,22 @@
         {% for musical in musicals %}
             <div class="card" id="{{ musical.title }}">
                 <div class="card-header">
-                    <p class="profile-name">{{ musical.title }}</p>
+                    <p class="profile-name">
+                        <strong>
+                        <a href="{{ musical.official_website }}" target="_blank">{{ musical.title }}</a>
+                        </strong>
+                    </p>
                 </div>
+                <!-- <div class="card-img">
+                    <img class="cropped" src="{{ musical.image_file }}">
+                </div> TODO: implement this later by adding link-->
                 <div class="card-body">
-                    <p><strong>Description:</strong> {{ musical.description }}</p>
+                    <p><strong>Description:</strong> {{ musical.description | truncate(100, True) }}</p>
                     <p><strong>Opening Date:</strong> {{ musical.opening_date }}</p>
                     <p><strong>Closing Date:</strong> {{ musical.closing_date }}</p>
-                    <p><strong>Official Website:</strong> 
-                        <a href="{{ musical.official_website }}" target="_blank">
-                            {{ musical.official_website }}
-                        </a>
-                    </p>
                     <p><strong>City:</strong> {{ musical.city }}</p>
+                </div>
+                <div class="card-footer">
                 </div>
             </div>
         {% endfor %}
