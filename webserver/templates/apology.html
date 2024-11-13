@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Apology
+{% endblock %}
+
+{% block content %}
+    <!-- https://memegen.link/ -->
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <img alt="{{ top }}" class="border img-fluid" 
+        src="http://memegen.link/custom/{{ top | urlencode }}/{{ bottom | urlencode }}.jpg?background=https://en.meming.world/images/en/e/e2/Crying_Cat_with_paw_up.jpg" 
+        title="{{ top }}"
+        style="max-width: 60%; max-height: 60%; object-fit: contain;">
+    </div>
+{% endblock %}

@@ -1,38 +1,23 @@
 #!/usr/bin/env python3
 
-"""
-Columbia W4111 Intro to databases
-Example webserver
-
-To run locally
-
-    python server.py
-
-Go to http://localhost:8111 in your browser
-
-
-A debugger such as "pdb" may be helpful for debugging.
-Read about it online.
-"""
-
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response
+from flask import Flask, request, render_template, g, redirect, Response, jsonify, session
 from database import runq, engine
+from flask_session import Session
+from flask_bcrypt import Bcrypt
+from helpers import apology, login_required
+from werkzeug.utils import secure_filename
+import uuid as uuid
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
-
-# Here we create a test table and insert some values in it
-runq("""DROP TABLE IF EXISTS test;""")
-runq("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);""")
-runq("""SELECT * FROM test;""")
-runq("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
-
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+bcrypt = Bcrypt(app)
 
 @app.before_request
 def before_request():
@@ -61,21 +46,8 @@ def teardown_request(exception):
   except Exception as e:
     pass
 
-
-#
-# @app.route is a decorator around index() that means:
-#   run index() whenever the user tries to access the "/" path using a GET request
-#
-# If you wanted the user to go to e.g., localhost:8111/foobar/ with POST or GET then you could use
-#
-#       @app.route("/foobar/", methods=["POST", "GET"])
-#
-# PROTIP: (the trailing / in the path is important)
-# 
-# see for routing: http://flask.pocoo.org/docs/0.10/quickstart/#routing
-# see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
-#
 @app.route('/')
+@login_required
 def index():
   """
   request is a special object that Flask provides to access web request information:
@@ -90,7 +62,7 @@ def index():
   # DEBUG: this is debugging code to see what request looks like
   print(request.args)
 
-  cursor = g.conn.execute(text("SELECT name FROM test"))
+  cursor = g.conn.execute(text("SELECT title FROM musicals"))
   names = [row[0] for row in cursor] 
   cursor.close()
 
@@ -127,23 +99,47 @@ def index():
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
-  return render_template("index.html", **context)
+  return render_template("home.html", **context)
 
-#
-# This is an example of a different path.  You can see it at
-# 
-#     localhost:8111/another
-#
-# notice that the function name is another() rather than index()
-# the functions for each app.route needs to have different names
-#
-@app.route('/another')
-def another():
-  return render_template("anotherfile.html")
+@app.route('/account')
+@login_required
+def account():
+    user_id = session['user_id']
 
+    # Query user details
+    user_query = text("""
+        SELECT username, email, bio, city 
+        FROM users 
+        WHERE user_id = :user_id
+    """)
+    user = g.conn.execute(user_query, {'user_id': user_id}).fetchone()
+
+    if not user:
+        return apology("User not found")
+
+    # Query follower count
+    followers_count_query = text("""
+        SELECT COUNT(*) 
+        FROM follows 
+        WHERE followed_id = :user_id
+    """)
+    followers_count = g.conn.execute(followers_count_query, {'user_id': user_id}).scalar()
+
+    # Query followed count
+    followed_count_query = text("""
+        SELECT COUNT(*) 
+        FROM follows 
+        WHERE follower_id = :user_id
+    """)
+    followed_count = g.conn.execute(followed_count_query, {'user_id': user_id}).scalar()
+
+    # Render the account page with the retrieved data
+    return render_template('account.html', user=user, 
+                           followers_count=followers_count, followed_count=followed_count)
 
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
+@login_required
 def add():
     name = request.form.get('name')
     print(name)
@@ -154,19 +150,78 @@ def add():
     return redirect('/')
 
 
-@app.route('/login')
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    abort(401)
-    this_is_never_executed()
+    session.clear()
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        if not email:
+            return apology("Missing email", 404)
+        if not password:
+            return apology("Missing password", 404)
+        
+        user = g.conn.execute(text("SELECT * FROM users WHERE email = :email"), {"email": email}).mappings().fetchone()
+        if not user:
+            return apology("No such user", 404)
+        
+        if not bcrypt.check_password_hash(user['passwordhash'], password):
+            return apology("Wrong password", 404)
 
+        # Log the user in
+        session['user_id'] = user['user_id']
+        return redirect("/")
 
-@app.route('/debug')
-def debug():
-    cursor = g.conn.execute(text("SELECT name FROM test"))
-    names = [row[0] for row in cursor]
-    cursor.close()
-    return f"All entries: {names}"
+    else: 
+        return render_template('login.html')
+    
+@app.route("/logout")
+def logout():
+    """Log user out"""
+    session.clear()
+    return redirect("/login")
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Register user"""
+    session.clear()    
+    if request.method == "POST":
+        username = request.form.get("username")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirmation = request.form.get("confirmation")
+
+        if not username:
+            return apology("Missing username", 404)
+        if not email:
+            return apology("Missing email", 404)
+        if not password:
+            return apology("Missing password", 404)
+        if not confirmation:
+            return apology("Missing password confirmation", 404)
+        if password != confirmation:
+            return apology("Passwords do not match", 404)
+
+        user_check = g.conn.execute(text("SELECT * FROM users WHERE username = :username"), 
+                                    {"username": username}).fetchone()
+        if user_check:
+            return apology("Username taken. Please choose something else.", 404)
+            
+        user_check = g.conn.execute(text("SELECT * FROM users WHERE email = :email"), 
+                                    {"email": email}).fetchone()
+        if user_check:
+            return apology("Account already created with email. Please log in.", 404)
+        
+        # Hash the password and insert the new user
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        g.conn.execute(text("""
+            INSERT INTO users (username, email, passwordhash)
+            VALUES (:username, :email, :passwordhash)
+        """), {"username": username, "email": email, "passwordhash": hashed_password})
+        g.conn.commit()
+        return redirect("/")
+    else: 
+        return render_template('register.html')
 
 if __name__ == "__main__":
   import click

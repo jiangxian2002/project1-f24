@@ -1,11 +1,14 @@
+import os
 from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
+load_dotenv()
 
 # Create an engine
 
 # DB credentials
-DB_USER = "xj2281"
-DB_PASSWORD = "broadwayyy"
-DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_SERVER = os.getenv("DB_SERVER")
 DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/w4111"
 
 # Create database engine that connects to the DATABASEURI
