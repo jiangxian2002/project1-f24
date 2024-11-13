@@ -73,17 +73,21 @@ def index():
 
 @app.route('/search', methods=['GET', 'POST'])
 @login_required
-def search(search_entry=None):
-    search_entry = request.args.get('search_entry', '').lower()
+def search():
+    search_entry_ori = request.args.get('search-entry', '')
+    search_entry= search_entry_ori.lower()
+    print("getting a search entry")
+    print(search_entry)
 
+    musicals = []
     if search_entry:
         cursor = g.conn.execute(text("""
-			SELECT title, description, opening_date, closing_date, official_website, city 
-			FROM musicals
+            SELECT title, description, opening_date, closing_date, official_website, city 
+            FROM musicals
             WHERE LOWER(title) LIKE :search_entry
-		"""), {'search_entry': f"%{search_entry}%"}).mappings()
+        """), {'search_entry': f"%{search_entry}%"}).mappings()
         
-		# Organize data as a list of dictionaries for easy access in the template
+        # Organize data as a list of dictionaries for easy access in the template
         musicals = [
             {
                 'title': row['title'],
@@ -95,10 +99,8 @@ def search(search_entry=None):
             }
             for row in cursor
         ]
-        
         cursor.close()
-        return render_template('home.html', musicals=musicals)
-    return redirect('/')
+    return render_template('home.html', musicals=musicals, search_entry=search_entry_ori)
 
 @app.route('/account')
 @login_required

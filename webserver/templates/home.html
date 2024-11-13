@@ -3,10 +3,12 @@
 {% block content %}
 <div id="search">
     <form class="search-bar" action="/search" method="get">
-        <input type="text" placeholder="Search Broaway Shows..." id="search-entry">
+        <input type="text" placeholder="Search Broaway Shows..." 
+            name="search-entry" value="{{ search_entry }}">
         <button type="button" id="search-btn"><i class="fa fa-search"></i></button>
     </form>
 </div>
+
 <section id="home">
     <div class="listing-grid">
         {% for musical in musicals %}
