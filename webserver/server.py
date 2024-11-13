@@ -49,57 +49,56 @@ def teardown_request(exception):
 @app.route('/')
 @login_required
 def index():
-  """
-  request is a special object that Flask provides to access web request information:
+    # Fetch all columns for each musical
+    cursor = g.conn.execute(text("""
+        SELECT title, description, opening_date, closing_date, official_website, city 
+        FROM musicals
+    """)).mappings()
+    
+    # Organize data as a list of dictionaries for easy access in the template
+    musicals = [
+        {
+            'title': row['title'],
+            'description': row['description'],
+            'opening_date': row['opening_date'],
+            'closing_date': row['closing_date'],
+            'official_website': row['official_website'],
+            'city': row['city']
+        }
+        for row in cursor
+    ]
+    
+    cursor.close()
+    return render_template("home.html", musicals=musicals)
 
-  request.method:   "GET" or "POST"
-  request.form:     if the browser submitted a form, this contains the data in the form
-  request.args:     dictionary of URL arguments e.g., {a:1, b:2} for http://localhost?a=1&b=2
+@app.route('/search', methods=['GET', 'POST'])
+@login_required
+def search(search_entry=None):
+    search_entry = request.args.get('search_entry', '').lower()
 
-  See its API: http://flask.pocoo.org/docs/0.10/api/#incoming-request-data
-  """
-
-  # DEBUG: this is debugging code to see what request looks like
-  print(request.args)
-
-  cursor = g.conn.execute(text("SELECT title FROM musicals"))
-  names = [row[0] for row in cursor] 
-  cursor.close()
-
-  #
-  # Flask uses Jinja templates, which is an extension to HTML where you can
-  # pass data to a template and dynamically generate HTML based on the data
-  # (you can think of it as simple PHP)
-  # documentation: https://realpython.com/blog/python/primer-on-jinja-templating/
-  #
-  # You can see an example template in templates/index.html
-  #
-  # context are the variables that are passed to the template.
-  # for example, "data" key in the context variable defined below will be 
-  # accessible as a variable in index.html:
-  #
-  #     # will print: [u'grace hopper', u'alan turing', u'ada lovelace']
-  #     <div>{{data}}</div>
-  #     
-  #     # creates a <div> tag for each element in data
-  #     # will print: 
-  #     #
-  #     #   <div>grace hopper</div>
-  #     #   <div>alan turing</div>
-  #     #   <div>ada lovelace</div>
-  #     #
-  #     {% for n in data %}
-  #     <div>{{n}}</div>
-  #     {% endfor %}
-  #
-  context = dict(data = names)
-
-
-  #
-  # render_template looks in the templates/ folder for files.
-  # for example, the below file reads template/index.html
-  #
-  return render_template("home.html", **context)
+    if search_entry:
+        cursor = g.conn.execute(text("""
+			SELECT title, description, opening_date, closing_date, official_website, city 
+			FROM musicals
+            WHERE LOWER(title) LIKE :search_entry
+		"""), {'search_entry': f"%{search_entry}%"}).mappings()
+        
+		# Organize data as a list of dictionaries for easy access in the template
+        musicals = [
+            {
+                'title': row['title'],
+                'description': row['description'],
+                'opening_date': row['opening_date'],
+                'closing_date': row['closing_date'],
+                'official_website': row['official_website'],
+                'city': row['city']
+            }
+            for row in cursor
+        ]
+        
+        cursor.close()
+        return render_template('home.html', musicals=musicals)
+    return redirect('/')
 
 @app.route('/account')
 @login_required

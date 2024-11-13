@@ -2,28 +2,28 @@
 
 {% block content %}
 <div id="search">
-    <form class="search-bar" action="/search">
+    <form class="search-bar" action="/search" method="get">
         <input type="text" placeholder="Search Broaway Shows..." id="search-entry">
         <button type="button" id="search-btn"><i class="fa fa-search"></i></button>
     </form>
 </div>
 <section id="home">
     <div class="listing-grid">
-        {% for service in services %}
-            <div class="card" id="{{ service.id }}">
+        {% for musical in musicals %}
+            <div class="card" id="{{ musical.title }}">
                 <div class="card-header">
-                    <p class="profile-name">{{ service.creator.username }}</p>
-                </div>
-                <div class="card-img">
-                    <img class="cropped" src="{{ service.image_file }}">
+                    <p class="profile-name">{{ musical.title }}</p>
                 </div>
                 <div class="card-body">
-                    <h3>{{ service.title }}</h3>
-                    <p>{{ service.description }}</p>
-                </div>
-                <div class="card-footer">
-                    <i class="fa-regular fa-comment"></i>
-                    <p>Comment</p>
+                    <p><strong>Description:</strong> {{ musical.description }}</p>
+                    <p><strong>Opening Date:</strong> {{ musical.opening_date }}</p>
+                    <p><strong>Closing Date:</strong> {{ musical.closing_date }}</p>
+                    <p><strong>Official Website:</strong> 
+                        <a href="{{ musical.official_website }}" target="_blank">
+                            {{ musical.official_website }}
+                        </a>
+                    </p>
+                    <p><strong>City:</strong> {{ musical.city }}</p>
                 </div>
             </div>
         {% endfor %}
