@@ -19,45 +19,19 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
+from database import runq, engine
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
-
-
-# XXX: The Database URI should be in the format of: 
-#
-#     postgresql://USER:PASSWORD@<IP_OF_POSTGRE_SQL_SERVER>/<DB_NAME>
-#
-# For example, if you had username ewu2493, password foobar, then the following line would be:
-#
-#     DATABASEURI = "postgresql://ewu2493:foobar@<IP_OF_POSTGRE_SQL_SERVER>/postgres"
-#
-# For your convenience, we already set it to the class database
-
-# Use the DB credentials you received by e-mail
-DB_USER = "YOUR_DB_USERNAME_HERE"
-DB_PASSWORD = "YOUR_DB_PASSWORD_HERE"
-
-DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
-
-DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/proj1part2"
-
-
-#
-# This line creates a database engine that knows how to connect to the URI above
-#
-engine = create_engine(DATABASEURI)
-
-
 # Here we create a test table and insert some values in it
-engine.execute("""DROP TABLE IF EXISTS test;""")
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
+runq("""DROP TABLE IF EXISTS test;""")
+runq("""CREATE TABLE IF NOT EXISTS test (
   id serial,
   name text
 );""")
-engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
-
+runq("""SELECT * FROM test;""")
+runq("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
 
 
 @app.before_request
@@ -116,14 +90,8 @@ def index():
   # DEBUG: this is debugging code to see what request looks like
   print(request.args)
 
-
-  #
-  # example of a database query
-  #
-  cursor = g.conn.execute("SELECT name FROM test")
-  names = []
-  for result in cursor:
-    names.append(result['name'])  # can also be accessed using result[0]
+  cursor = g.conn.execute(text("SELECT name FROM test"))
+  names = [row[0] for row in cursor] 
   cursor.close()
 
   #
@@ -166,7 +134,7 @@ def index():
 # 
 #     localhost:8111/another
 #
-# notice that the functio name is another() rather than index()
+# notice that the function name is another() rather than index()
 # the functions for each app.route needs to have different names
 #
 @app.route('/another')
@@ -177,17 +145,27 @@ def another():
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
 def add():
-  name = request.form['name']
-  print(name)
-  cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
-  g.conn.execute(text(cmd), name1 = name, name2 = name);
-  return redirect('/')
+    name = request.form.get('name')
+    print(name)
+    if name:
+        cmd = 'INSERT INTO test(name) VALUES (:name)'
+        g.conn.execute(text(cmd), {'name': name})
+        g.conn.commit()
+    return redirect('/')
 
 
 @app.route('/login')
 def login():
     abort(401)
     this_is_never_executed()
+
+
+@app.route('/debug')
+def debug():
+    cursor = g.conn.execute(text("SELECT name FROM test"))
+    names = [row[0] for row in cursor]
+    cursor.close()
+    return f"All entries: {names}"
 
 
 if __name__ == "__main__":
@@ -199,17 +177,6 @@ if __name__ == "__main__":
   @click.argument('HOST', default='0.0.0.0')
   @click.argument('PORT', default=8111, type=int)
   def run(debug, threaded, host, port):
-    """
-    This function handles command line parameters.
-    Run the server using
-
-        python server.py
-
-    Show the help text using
-
-        python server.py --help
-
-    """
 
     HOST, PORT = host, port
     print("running on %s:%d" % (HOST, PORT))
