@@ -18,7 +18,11 @@
     <h2>Cast Members</h2>
     <ul>
         {% for cast_member in cast_members %}
-            <li>{{ cast_member.first_name }} {{ cast_member.last_name }}</li>
+            <li>
+                <a href="{{ url_for('view_cast_member', actor_id=cast_member.actor_id) }}">
+                    {{ cast_member.first_name }}{% if cast_member.middle_initial %} {{ cast_member.middle_initial }}.{% endif %} {{ cast_member.last_name }}
+                </a> - ({{ cast_member.start_date }} - {{ cast_member.end_date }})
+            </li>
         {% endfor %}
     </ul>
 

@@ -190,6 +190,35 @@ def view_theatre():
     # Render the template and pass the theatre and musicals data
     return render_template('theatre.html', theatre=theatre, musicals=musicals)
 
+@app.route('/cast_member', methods=['GET'])
+def view_cast_member():
+    # Get the actor_id from the query string (URL parameter)
+    actor_id = request.args.get("actor_id")
+
+    if not actor_id:
+        return apology("Actor ID is required", 400)
+
+    # Retrieve cast member details
+    cast_member = g.conn.execute(text("""
+        SELECT *
+        FROM cast_members
+        WHERE actor_id = :actor_id
+    """), {'actor_id': actor_id}).mappings().fetchone()
+
+    if not cast_member:
+        return apology("Cast member not found", 404)
+
+    # Retrieve musicals in which the cast member has participated with their respective dates
+    musicals = g.conn.execute(text("""
+        SELECT *
+        FROM musicals m
+        JOIN participated p ON m.musical_id = p.musical_id
+        WHERE p.actor_id = :actor_id
+        ORDER BY p.start_date DESC
+    """), {'actor_id': actor_id}).mappings().fetchall()
+
+    # Render the template and pass the cast member and musicals data
+    return render_template('cast_member.html', cast_member=cast_member, musicals=musicals)
 
 
 @app.route('/account')
