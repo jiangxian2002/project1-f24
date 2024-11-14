@@ -2,6 +2,21 @@
 
 {% block content %}
 <h1>{{ musical.title }}</h1>
+{% if session["user_id"] %}
+    {% if in_wishlist %}
+        <!-- Show "Remove from Wishlist" button if the item is already in the wishlist -->
+        <form action="{{ url_for('remove_from_wishlist') }}" method="post">
+            <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
+            <button type="submit">Remove from Wishlist</button>
+        </form>
+    {% else %}
+        <!-- Show "Add to Wishlist" button if the item is not in the wishlist -->
+        <form action="{{ url_for('add_to_wishlist') }}" method="post">
+            <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
+            <button type="submit">Add to Wishlist</button>
+        </form>
+    {% endif %}
+{% endif %}
 <section id="home">
     <div>
     <p><strong>Description: </strong>{{ musical.description }}</p>

@@ -4,44 +4,47 @@
 <h1>Manage Your Social Connections</h1>
 
 <h2>Users You May Want to Follow</h2>
-<ul>
+<div class="user-list">
     {% for user in users_to_follow %}
-        <li>
+        <div class="user-card">
             <p><strong>{{ user.username }}</strong></p>
             <p>{{ user.bio if user.bio else "No bio available" }}</p>
             <form action="{{ url_for('follow') }}" method="post" style="display: inline;">
                 <input type="hidden" name="followed_id" value="{{ user.user_id }}">
                 <button type="submit">Follow</button>
             </form>
-        </li>
+            <a href="/user/{{ user.user_id }}">View Profile</a>
+        </div>
     {% endfor %}
-</ul>
+</div>
 
 <h2>Users You Are Following</h2>
-<ul>
+<div class="user-list">
     {% for user in users_followed %}
-        <li>
+        <div class="user-card">
             <p><strong>{{ user.username }}</strong></p>
             <p>{{ user.bio if user.bio else "No bio available" }}</p>
             <form action="{{ url_for('unfollow') }}" method="post" style="display: inline;">
                 <input type="hidden" name="unfollowed_id" value="{{ user.user_id }}">
                 <button type="submit">Unfollow</button>
             </form>
-        </li>
+            <a href="/user/{{ user.user_id }}">View Profile</a>
+        </div>
     {% endfor %}
-</ul>
+</div>
 
 <h2>Users Following You</h2>
-<ul>
+<div class="user-list">
     {% for user in users_followers %}
-        <li>
+        <div class="user-card">
             <p><strong>{{ user.username }}</strong></p>
             <p>{{ user.bio if user.bio else "No bio available" }}</p>
             <form action="{{ url_for('remove_follow') }}" method="post" style="display: inline;">
                 <input type="hidden" name="follower_id" value="{{ user.user_id }}">
                 <button type="submit">Remove Follow</button>
             </form>
-        </li>
+            <a href="/user/{{ user.user_id }}">View Profile</a>
+        </div>
     {% endfor %}
-</ul>
+</div>
 {% endblock %}

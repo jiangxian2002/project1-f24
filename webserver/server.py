@@ -105,7 +105,7 @@ def search():
 def view_broadway_show():
     # Get the musical_id from the query string (URL parameter)
     musical_id = request.args.get("id")
-    print(id)
+    user_id = session.get('user_id')  # Get user_id if the user is logged in
 
     if not musical_id:
         return apology("Musical ID is required", 400)
@@ -120,6 +120,18 @@ def view_broadway_show():
     # Check if the musical exists
     if not musical:
         return apology("Musical not found", 404)
+    
+    # Retrieve if user has added this musical to their wishlist
+    in_wishlist = False
+    if user_id:
+        wishlist_entry = g.conn.execute(text("""
+            SELECT 1
+            FROM wishlist
+            WHERE musical_id = :musical_id AND user_id = :user_id
+        """), {'musical_id': musical_id, 'user_id': user_id}).fetchone()
+        
+        in_wishlist = wishlist_entry is not None  # Set to True if the show is in the wishlist
+
     
     # Retrieve other musical data
     # Retrieve showtimes for the musical
@@ -157,7 +169,7 @@ def view_broadway_show():
     # Render the template and pass all related data
     return render_template('broadway_show.html', musical=musical, 
                            showtimes=showtimes, cast_members=cast_members, 
-                           comments=comments, theatres=theatres)
+                           comments=comments, theatres=theatres, in_wishlist=in_wishlist)
 
 
 @app.route('/theatre', methods=['GET'])
@@ -358,15 +370,74 @@ def remove_follow():
 
     return redirect('/manage_social')
 
+@app.route('/manage_wishlist', methods=['GET'])
+@login_required
+def manage_wishlist():
+    user_id = session['user_id']
+
+    # Query to retrieve shows in the user's wishlist
+    wishlist_shows = g.conn.execute(text("""
+        SELECT m.musical_id, m.title, m.description, m.opening_date, m.closing_date
+        FROM musicals m
+        JOIN wishlist w ON m.musical_id = w.musical_id
+        WHERE w.user_id = :user_id
+    """), {'user_id': user_id}).mappings().fetchall()
+
+    return render_template('manage_wishlist.html', wishlist_shows=wishlist_shows)
+
+@app.route('/add_to_wishlist', methods=['POST'])
+@login_required
+def add_to_wishlist():
+    user_id = session['user_id']
+    musical_id = request.form.get("musical_id")
+
+    if not musical_id:
+        return apology("Show ID is required", 400)
+
+    try:
+        g.conn.execute(text("""
+            INSERT INTO wishlist (user_id, musical_id)
+            VALUES (:user_id, :musical_id)
+        """), {'user_id': user_id, 'musical_id': musical_id})
+        g.conn.commit()
+    except Exception as e:
+        print(e)
+        return apology("Failed to add to wishlist", 500)
+
+    return redirect('/manage_wishlist')
+
+@app.route('/remove_from_wishlist', methods=['POST'])
+@login_required
+def remove_from_wishlist():
+    user_id = session['user_id']
+    musical_id = request.form.get("musical_id")
+
+    if not musical_id:
+        return apology("Show ID is required", 400)
+
+    try:
+        g.conn.execute(text("""
+            DELETE FROM wishlist
+            WHERE user_id = :user_id AND musical_id = :musical_id
+        """), {'user_id': user_id, 'musical_id': musical_id})
+        g.conn.commit()
+    except Exception as e:
+        print(e)
+        return apology("Failed to remove from wishlist", 500)
+
+    return redirect('/manage_wishlist')
+
 
 @app.route('/update_bio', methods=['POST'])
 @login_required
 def update_bio():
     user_id = session['user_id']
-    new_bio = request.json.get('value')
+    new_bio = request.form.get('bio')
+
+    print("new value is")
 
     if new_bio is None:
-        return Response("No bio provided", status=400)
+        return apology("No bio provided", 400)
 
     # Update the bio in the database
     update_bio_query = text("""
@@ -377,27 +448,27 @@ def update_bio():
     g.conn.execute(update_bio_query, {'new_bio': new_bio, 'user_id': user_id})
     g.conn.commit()
 
-    return Response("Bio updated successfully", status=200)
+    return redirect("/account")
 
 @app.route('/update_city', methods=['POST'])
 @login_required
 def update_city():
     user_id = session['user_id']
-    new_city = request.json.get('value')
+    new_city = request.form.get('city')
 
     if new_city is None:
-        return Response("No city provided", status=400)
+        return apology("No city provided", 400)
 
     # Update the bio in the database
     update_city_query = text("""
         UPDATE users 
-        SET bio = :new_city
+        SET city = :new_city
         WHERE user_id = :user_id
     """)
     g.conn.execute(update_city_query, {'new_city': new_city, 'user_id': user_id})
     g.conn.commit()
 
-    return Response("City updated successfully", status=200)
+    return redirect("/account")
 
 
 @app.route('/user/followers')

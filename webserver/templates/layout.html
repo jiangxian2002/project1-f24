@@ -26,6 +26,7 @@
             <div class="nav-container">
                 <ul class="nav-links">
                     {% if session["user_id"] %}
+                        <li><a href="/manage_wishlist" class="nav-link"><i class="fa fa-heart"></i>Manage Wishlist</a></li>
                         <li><a href="/manage_social" class="nav-link"><i class="fa fa-users"></i>Manage Social</a></li>
                         <li><a href="/account" class="nav-link"><i class="fa fa-user"></i>Account</a></li>
                     {% else %}
