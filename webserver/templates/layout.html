@@ -26,8 +26,8 @@
             <div class="nav-container">
                 <ul class="nav-links">
                     {% if session["user_id"] %}
-                        <!-- <li><a href="/add_service" class="nav-link"><i class="fa-solid fa-plus"></i>Add Service</a></li> -->
-                        <li><a href="/account" class="nav-link"><i class="fa-regular fa-user"></i>Account</a></li>
+                        <li><a href="/manage_social" class="nav-link"><i class="fa fa-users"></i>Manage Social</a></li>
+                        <li><a href="/account" class="nav-link"><i class="fa fa-user"></i>Account</a></li>
                     {% else %}
                         <li><a href="/login" class="nav-link">Log In</a></li>
                         <li><a href="/register" class="nav-link">Register</a></li>

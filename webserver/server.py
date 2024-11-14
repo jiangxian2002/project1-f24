@@ -131,7 +131,7 @@ def view_broadway_show():
 
     # Retrieve cast members for the musical
     cast_members = g.conn.execute(text("""
-        SELECT cm.*
+        SELECT *
         FROM cast_members cm
         JOIN participated p ON cm.actor_id = p.actor_id
         WHERE p.musical_id = :musical_id
@@ -139,7 +139,7 @@ def view_broadway_show():
 
     # Retrieve comments for the musical
     comments = g.conn.execute(text("""
-        SELECT c.*, u.username
+        SELECT *
         FROM comments c
         JOIN users u ON c.user_id = u.user_id
         WHERE c.musical_id = :musical_id
@@ -148,7 +148,7 @@ def view_broadway_show():
 
     # Retrieve theatres where the musical is being shown
     theatres = g.conn.execute(text("""
-        SELECT t.*, sa.start_date, sa.end_date
+        SELECT *
         FROM theatres t
         JOIN showing_at sa ON t.theatre_id = sa.theatre_id
         WHERE sa.musical_id = :musical_id
@@ -228,6 +228,107 @@ def account():
     return render_template('account.html', user=user, 
                            followers_count=followers_count, followed_count=followed_count)
 
+@app.route('/manage_social', methods=['GET'])
+@login_required
+def add_follow():
+    user_id = session['user_id']
+
+    # Query to retrieve users whom the current user is not following
+    users_to_follow = g.conn.execute(text("""
+        SELECT u.user_id, u.username, u.bio
+        FROM users u
+        WHERE u.user_id != :user_id
+        AND u.user_id NOT IN (
+            SELECT followed_id
+            FROM follows
+            WHERE follower_id = :user_id
+        )
+    """), {'user_id': user_id}).mappings().fetchall()
+    
+    # Query to retrieve users whom the current user is following
+    users_followed = g.conn.execute(text("""
+        SELECT u.user_id, u.username, u.bio
+        FROM users u
+        JOIN follows f ON u.user_id = f.followed_id
+        WHERE f.follower_id = :user_id
+    """), {'user_id': user_id}).mappings().fetchall()
+
+    # Query to retrieve users following the current user
+    users_followers = g.conn.execute(text("""
+        SELECT u.user_id, u.username, u.bio
+        FROM users u
+        JOIN follows f ON u.user_id = f.follower_id
+        WHERE f.followed_id = :user_id
+    """), {'user_id': user_id}).mappings().fetchall()
+
+    return render_template('manage_social.html', users_followed=users_followed, users_to_follow=users_to_follow, users_followers=users_followers)
+
+@app.route('/follow', methods=['POST'])
+@login_required
+def follow():
+    user_id = session['user_id']
+    followed_id = request.form.get("followed_id")
+
+    if not followed_id:
+        return apology("User to follow not specified", 400)
+
+    # Insert a new follow relationship into the follows table
+    try:
+        g.conn.execute(text("""
+            INSERT INTO follows (follower_id, followed_id)
+            VALUES (:follower_id, :followed_id)
+        """), {'follower_id': user_id, 'followed_id': followed_id})
+        g.conn.commit()
+    except Exception as e:
+        print(e)
+        return apology("Failed to add follow", 500)
+
+    return redirect('/manage_social')
+
+@app.route('/unfollow', methods=['POST'])
+@login_required
+def unfollow():
+    user_id = session['user_id']
+    unfollowed_id = request.form.get("unfollowed_id")
+
+    if not unfollowed_id:
+        return apology("User to unfollow not specified", 400)
+
+    # Remove the follow relationship from the follows table
+    try:
+        g.conn.execute(text("""
+            DELETE FROM follows
+            WHERE follower_id = :follower_id AND followed_id = :unfollowed_id
+        """), {'follower_id': user_id, 'unfollowed_id': unfollowed_id})
+        g.conn.commit()
+    except Exception as e:
+        print(e)
+        return apology("Failed to remove follow", 500)
+
+    return redirect('/manage_social')
+
+@app.route('/remove_follow', methods=['POST'])
+@login_required
+def remove_follow():
+    user_id = session['user_id']
+    follower_id = request.form.get("follower_id")
+
+    if not follower_id:
+        return apology("Follower not specified", 400)
+
+    # Remove the follow relationship where the specified user follows the current user
+    try:
+        g.conn.execute(text("""
+            DELETE FROM follows
+            WHERE follower_id = :follower_id AND followed_id = :user_id
+        """), {'follower_id': follower_id, 'user_id': user_id})
+        g.conn.commit()
+    except Exception as e:
+        print(e)
+        return apology("Failed to remove follower", 500)
+
+    return redirect('/manage_social')
+
 
 @app.route('/update_bio', methods=['POST'])
 @login_required
@@ -245,9 +346,29 @@ def update_bio():
         WHERE user_id = :user_id
     """)
     g.conn.execute(update_bio_query, {'new_bio': new_bio, 'user_id': user_id})
+    g.conn.commit()
 
     return Response("Bio updated successfully", status=200)
 
+@app.route('/update_city', methods=['POST'])
+@login_required
+def update_city():
+    user_id = session['user_id']
+    new_city = request.json.get('value')
+
+    if new_city is None:
+        return Response("No city provided", status=400)
+
+    # Update the bio in the database
+    update_city_query = text("""
+        UPDATE users 
+        SET bio = :new_city
+        WHERE user_id = :user_id
+    """)
+    g.conn.execute(update_city_query, {'new_city': new_city, 'user_id': user_id})
+    g.conn.commit()
+
+    return Response("City updated successfully", status=200)
 
 
 @app.route('/user/followers')
