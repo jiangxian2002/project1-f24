@@ -1,20 +1,21 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<h1>My Wishlist</h1>
-
-<ul>
-    {% for show in wishlist_shows %}
-        <li>
-            <h3>{{ show.title }}</h3>
-            <p><strong>Description:</strong> {{ show.description }}</p>
-            <p><strong>Opening Date:</strong> {{ show.opening_date }}</p>
-            <p><strong>Closing Date:</strong> {{ show.closing_date }}</p>
-            <form action="{{ url_for('remove_from_wishlist') }}" method="post">
-                <input type="hidden" name="musical_id" value="{{ show.musical_id }}">
-                <button type="submit">Remove from Wishlist</button>
-            </form>
-        </li>
-    {% endfor %}
-</ul>
+<section id="wishlist">
+    <h1>My Wishlist</h1>
+    <div class="wishlist-list">
+        {% for show in wishlist_shows %}
+            <div class="wishlist-card">
+                <h3 class="wishlist-title">{{ show.title }}</h3>
+                <p><strong>Description:</strong> {{ show.description }}</p>
+                <p><strong>Opening Date:</strong> {{ show.opening_date }}</p>
+                <p><strong>Closing Date:</strong> {{ show.closing_date }}</p>
+                <form action="{{ url_for('remove_from_wishlist') }}" method="post">
+                    <input type="hidden" name="musical_id" value="{{ show.musical_id }}">
+                    <button type="submit" class="wishlist-remove-btn">Remove from Wishlist</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}

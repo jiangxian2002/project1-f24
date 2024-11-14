@@ -1,46 +1,51 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<section id="account-details">
-    <div class="details">
-        <h1>{{ user.username }}</h1>
-        <p>Email: {{ user.email }}</p>
-        <form action="/update_bio" method="post">
-            <p>
-                Bio: <span id="bio-text">{{ user.bio if user.bio else "No bio yet" }}</span>
-                <input type="text" name="bio" id="bio-input" value="{{ user.bio }}" style="display: none;">
-                <button type="submit" id="bio-submit" style="display: none;">Save</button>
-                <button type="button" onclick="toggleEdit('bio')">
-                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                </button>
-            </p>
-        </form>
-        
-        <form action="/update_city" method="post">
-            <p>
-                City: <span id="city-text">{{ user.city if user.city else "No city yet" }}</span>
-                <input type="text" name="city" id="city-input" value="{{ user.city }}" style="display: none;">
-                <button type="submit" id="city-submit" style="display: none;">Save</button>
-                <button type="button" onclick="toggleEdit('city')">
-                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                </button>
-            </p>
-        </form>
+<section id="account-details-user">
+    <div class="account-card-user">
+        <div class="account-info">
+            <h1>{{ user.username }}</h1>
+            <p><strong>Email:</strong> {{ user.email }}</p>
 
-        <p>
-            <a href="/user/followers">
-                    Followers: {{ followers_count }}
-            </a> | 
-            <a href="/user/following">
-                    Following: {{ followed_count }}
-            </a>
-        </p>
+            <!-- Bio Field -->
+            <form action="/update_bio" method="post" class="editable-field">
+                <p>
+                    <strong>Bio:</strong> 
+                    <span id="bio-text">{{ user.bio if user.bio else "No bio yet" }}</span>
+                    <input type="text" name="bio" id="bio-input" value="{{ user.bio }}" style="display: none;">
+                    <button type="submit" id="bio-submit" class="save-btn" style="display: none;">Save</button>
+                    <button type="button" onclick="toggleEdit('bio')" class="edit-btn">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </button>
+                </p>
+            </form>
+
+            <!-- City Field -->
+            <form action="/update_city" method="post" class="editable-field">
+                <p>
+                    <strong>City:</strong> 
+                    <span id="city-text">{{ user.city if user.city else "No city yet" }}</span>
+                    <input type="text" name="city" id="city-input" value="{{ user.city }}" style="display: none;">
+                    <button type="submit" id="city-submit" class="save-btn" style="display: none;">Save</button>
+                    <button type="button" onclick="toggleEdit('city')" class="edit-btn">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </button>
+                </p>
+            </form>
+
+            <!-- Followers and Following -->
+            <p class="social-links">
+                <a href="/user/followers">Followers: {{ followers_count }}</a> | 
+                <a href="/user/following">Following: {{ followed_count }}</a>
+            </p>
+        </div>
+        <div class="logout-container">
+            <form action="/logout" method="post">
+                <button class="logout-btn">Log Out</button>
+            </form>
+        </div>
     </div>
 </section>
-
-<form>
-    <button formaction="/logout">Log Out</button>
-</form>
 
 <script>
     function toggleEdit(field) {
@@ -48,7 +53,6 @@
         const inputElement = document.getElementById(`${field}-input`);
         const submitButton = document.getElementById(`${field}-submit`);
 
-        // Toggle display between text and input field
         if (textElement.style.display === 'none') {
             textElement.style.display = 'inline';
             inputElement.style.display = 'none';
@@ -61,6 +65,6 @@
         }
     }
 </script>
-        
+
 <script src="/static/js/home.js"></script>
 {% endblock %}
