@@ -1,50 +1,64 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<h1>Manage Your Social Connections</h1>
+<div class="manage-social">
+    <h1>Manage Your Social Connections</h1>
 
-<h2>Users You May Want to Follow</h2>
-<div class="user-list">
-    {% for user in users_to_follow %}
-        <div class="user-card">
-            <p><strong>{{ user.username }}</strong></p>
-            <p>{{ user.bio if user.bio else "No bio available" }}</p>
-            <form action="{{ url_for('follow') }}" method="post" style="display: inline;">
-                <input type="hidden" name="followed_id" value="{{ user.user_id }}">
-                <button type="submit">Follow</button>
-            </form>
-            <a href="/user/{{ user.user_id }}">View Profile</a>
+    <div class="social-section">
+        <h2>Users You May Want to Follow</h2>
+        <div class="user-list">
+            {% for user in users_to_follow %}
+                <div class="user-card">
+                    <p><strong>{{ user.username }}</strong></p>
+                    <p class="user-bio">{{ user.bio if user.bio else "No bio available" }}</p>
+                    <div class="user-actions">
+                        <form action="{{ url_for('follow') }}" method="post" style="display: inline;">
+                            <input type="hidden" name="followed_id" value="{{ user.user_id }}">
+                            <button type="submit" class="follow-btn">Follow</button>
+                        </form>
+                        <a href="/user/{{ user.user_id }}" class="view-profile-link">View Profile</a>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-</div>
+    </div>
 
-<h2>Users You Are Following</h2>
-<div class="user-list">
-    {% for user in users_followed %}
-        <div class="user-card">
-            <p><strong>{{ user.username }}</strong></p>
-            <p>{{ user.bio if user.bio else "No bio available" }}</p>
-            <form action="{{ url_for('unfollow') }}" method="post" style="display: inline;">
-                <input type="hidden" name="unfollowed_id" value="{{ user.user_id }}">
-                <button type="submit">Unfollow</button>
-            </form>
-            <a href="/user/{{ user.user_id }}">View Profile</a>
+    <div class="social-section">
+        <h2>Users You Are Following</h2>
+        <div class="user-list">
+            {% for user in users_followed %}
+                <div class="user-card">
+                    <p><strong>{{ user.username }}</strong></p>
+                    <p class="user-bio">{{ user.bio if user.bio else "No bio available" }}</p>
+                    <div class="user-actions">
+                        <form action="{{ url_for('unfollow') }}" method="post" style="display: inline;">
+                            <input type="hidden" name="unfollowed_id" value="{{ user.user_id }}">
+                            <button type="submit" class="unfollow-btn">Unfollow</button>
+                        </form>
+                        <a href="/user/{{ user.user_id }}" class="view-profile-link">View Profile</a>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-</div>
+    </div>
 
-<h2>Users Following You</h2>
-<div class="user-list">
-    {% for user in users_followers %}
-        <div class="user-card">
-            <p><strong>{{ user.username }}</strong></p>
-            <p>{{ user.bio if user.bio else "No bio available" }}</p>
-            <form action="{{ url_for('remove_follow') }}" method="post" style="display: inline;">
-                <input type="hidden" name="follower_id" value="{{ user.user_id }}">
-                <button type="submit">Remove Follow</button>
-            </form>
-            <a href="/user/{{ user.user_id }}">View Profile</a>
+    <div class="social-section">
+        <h2>Users Following You</h2>
+        <div class="user-list">
+            {% for user in users_followers %}
+                <div class="user-card">
+                    <p><strong>{{ user.username }}</strong></p>
+                    <p class="user-bio">{{ user.bio if user.bio else "No bio available" }}</p>
+                    <div class="user-actions">
+                        <form action="{{ url_for('remove_follow') }}" method="post" style="display: inline;">
+                            <input type="hidden" name="follower_id" value="{{ user.user_id }}">
+                            <button type="submit" class="remove-btn">Remove Follow</button>
+                        </form>
+                        <a href="/user/{{ user.user_id }}" class="view-profile-link">View Profile</a>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+    </div>
 </div>
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<section id="account-details">
+        <div class="account-card-user">
+                <div class="account-info">
+                        <h1>{{ user.username }}</h1>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Bio:</strong> {{ user.bio if user.bio else "No bio available" }}</p>
+                        <p><strong>City:</strong> {{ user.city if user.city else "No city specified" }}</p>
+
+                        <p>
+                                <strong>Followers:</strong> {{ followers_count }} |
+                                <strong>Following:</strong> {{ followed_count }}
+                        </p>
+                </div>
+        </div>
+</section>
+
+<script src="/static/js/home.js"></script>
+{% endblock %}

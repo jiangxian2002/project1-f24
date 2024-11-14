@@ -6,29 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Revue Broadway</title>
 
-    <link rel="stylesheet" href="/static/main.css"></link>
+    <link rel="stylesheet" href="/static/main.css">
 
-    <!-- jquery -->
-    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>  
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/0f61eb6948.js" crossorigin="anonymous"></script>
 </head>
 <body>
+    <!-- Header -->
     <header>
-        <nav>
+        <nav class="navbar">
             <div class="logo">
                 <a href="/">Revue Broadway</a>
             </div>
             <div class="nav-container">
                 <ul class="nav-links">
                     {% if session["user_id"] %}
-                        <li><a href="/manage_wishlist" class="nav-link"><i class="fa fa-heart"></i>Manage Wishlist</a></li>
-                        <li><a href="/manage_social" class="nav-link"><i class="fa fa-users"></i>Manage Social</a></li>
-                        <li><a href="/account" class="nav-link"><i class="fa fa-user"></i>Account</a></li>
+                        <li><a href="/manage_wishlist" class="nav-link"><i class="fa fa-heart"></i> Manage Wishlist</a></li>
+                        <li><a href="/manage_social" class="nav-link"><i class="fa fa-users"></i> Manage Social</a></li>
+                        <li><a href="/account" class="nav-link"><i class="fa fa-user"></i> Account</a></li>
                     {% else %}
                         <li><a href="/login" class="nav-link">Log In</a></li>
                         <li><a href="/register" class="nav-link">Register</a></li>
@@ -39,17 +43,22 @@
                 <i class="fa-solid fa-bars"></i>
             </button>
         </nav>
-        <div class="nav-dropdown">
-        </div>
     </header>
+
+    <!-- Main Content -->
     <main>
-        {% block content %}
-        {% endblock %}
+        <div class="content-container">
+            {% block content %}
+            {% endblock %}
+        </div>
     </main>
+
+    <!-- Footer -->
     <footer>
+        <p>&copy; 2024 Revue Broadway</p>
     </footer>
 
+    <!-- Scripts -->
     <script src="/static/js/layout.js"></script>
-    <script src="https://kit.fontawesome.com/0f61eb6948.js" crossorigin="anonymous"></script>
 </body>
 </html>

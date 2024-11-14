@@ -1,71 +1,110 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h1>{{ musical.title }}</h1>
-{% if session["user_id"] %}
-    {% if in_wishlist %}
-        <!-- Show "Remove from Wishlist" button if the item is already in the wishlist -->
-        <form action="{{ url_for('remove_from_wishlist') }}" method="post">
-            <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
-            <button type="submit">Remove from Wishlist</button>
-        </form>
-    {% else %}
-        <!-- Show "Add to Wishlist" button if the item is not in the wishlist -->
-        <form action="{{ url_for('add_to_wishlist') }}" method="post">
-            <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
-            <button type="submit">Add to Wishlist</button>
-        </form>
-    {% endif %}
-{% endif %}
-<section id="home">
-    <div>
-    <p><strong>Description: </strong>{{ musical.description }}</p>
-    <p><strong>Opening Date: </strong>{{ musical.opening_date }}</p>
-    <p><strong>Closing Date: </strong>{{ musical.closing_date }}</p>
-    <p><strong>City: </strong>{{ musical.city }}</p>
-    <h2>Showtimes</h2>
-        <ul>
+<section id="musical-details" class="container">
+    <div class="musical-header">
+        <h1>{{ musical.title }}</h1>
+        {% if session["user_id"] %}
+            <div class="wishlist-actions">
+                {% if in_wishlist %}
+                    <!-- Show "Remove from Wishlist" button if the item is already in the wishlist -->
+                    <form action="{{ url_for('remove_from_wishlist') }}" method="post" class="wishlist-form">
+                        <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
+                        <button type="submit" class="btn btn-danger">Remove from Wishlist</button>
+                    </form>
+                {% else %}
+                    <!-- Show "Add to Wishlist" button if the item is not in the wishlist -->
+                    <form action="{{ url_for('add_to_wishlist') }}" method="post" class="wishlist-form">
+                        <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
+                        <button type="submit" class="btn btn-primary">Add to Wishlist</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="musical-content">
+        <p><strong>Description: </strong>{{ musical.description }}</p>
+        <p><strong>Opening Date: </strong>{{ musical.opening_date }}</p>
+        <p><strong>Closing Date: </strong>{{ musical.closing_date }}</p>
+        <p><strong>City: </strong>{{ musical.city }}</p>
+    </div>
+
+    <div class="additional-info">
+        <h2>Showtimes</h2>
+        <ul class="info-list">
             {% for showtime in showtimes %}
-                <li>{{ showtime.date }} at {{ showtime.start_time }}</li>
+                <li>
+                    {{ showtime.date }} at {{ showtime.start_time }}
+                    {% if session["user_id"] %}
+                        {% if showtime.showtime_id in watched_showtimes %}
+                            <!-- Remove from Watched Button -->
+                            <form action="{{ url_for('remove_from_watched') }}" method="post" class="watched-form">
+                                <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
+                                <input type="hidden" name="showtime_id" value="{{ showtime.showtime_id }}">
+                                <button type="submit" class="btn btn-danger">Remove from Watched</button>
+                            </form>
+                        {% else %}
+                            <!-- Add to Watched Button -->
+                            <form action="{{ url_for('add_to_watched') }}" method="post" class="watched-form">
+                                <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
+                                <input type="hidden" name="showtime_id" value="{{ showtime.showtime_id }}">
+                                <input type="text" name="notes" placeholder="Add notes (optional)">
+                                <button type="submit" class="btn btn-primary">Add to Watched</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </li>
             {% endfor %}
         </ul>
 
-    <h2>Cast Members</h2>
-    <ul>
-        {% for cast_member in cast_members %}
-            <li>
-                <a href="{{ url_for('view_cast_member', actor_id=cast_member.actor_id) }}">
-                    {{ cast_member.first_name }}{% if cast_member.middle_initial %} {{ cast_member.middle_initial }}.{% endif %} {{ cast_member.last_name }}
-                </a> - ({{ cast_member.start_date }} - {{ cast_member.end_date }})
-            </li>
-        {% endfor %}
-    </ul>
 
-    <h2>Comments</h2>
-    <ul>
-        {% for comment in comments %}
-            <li><strong>{{ comment.username }}:</strong> {{ comment.comment }} ({{ comment.date_time }})</li>
-        {% endfor %}
-    </ul>
+        <h2>Cast Members</h2>
+        <ul class="info-list">
+            {% for cast_member in cast_members %}
+                <li>
+                    <a href="{{ url_for('view_cast_member', actor_id=cast_member.actor_id) }}">
+                        {{ cast_member.first_name }}{% if cast_member.middle_initial %} {{ cast_member.middle_initial }}.{% endif %} {{ cast_member.last_name }}
+                    </a> - ({{ cast_member.start_date }} - {{ cast_member.end_date }})
+                </li>
+            {% endfor %}
+        </ul>
 
-    <h2>Theatres</h2>
-    <ul>
-        {% for theatre in theatres %}
-            <li>
-                <a href="{{ url_for('view_theatre', theatre_id=theatre.theatre_id) }}">
-                    {{ theatre.name }}
-                </a> - {{ theatre.location }} ({{ theatre.start_date }} - {{ theatre.end_date }})
-            </li>
-        {% endfor %}
-    </ul>
+        <h2>Theatres</h2>
+        <ul class="info-list">
+            {% for theatre in theatres %}
+                <li>
+                    <a href="{{ url_for('view_theatre', theatre_id=theatre.theatre_id) }}">
+                        {{ theatre.name }}
+                    </a> - {{ theatre.location }} ({{ theatre.start_date }} - {{ theatre.end_date }})
+                </li>
+            {% endfor %}
+        </ul>
 
+        <h2>Comments</h2>
+        <ul class="info-list">
+            {% for comment in comments %}
+                <li class="comment"><strong>{{ comment.username }}:</strong> {{ comment.comment }} ({{ comment.date_time }})</li>
+            {% endfor %}
+        </ul>
+        <!-- Comment Form -->
+        {% if session["user_id"] %}
+            <form action="{{ url_for('add_comment') }}" method="post" class="comment-form">
+                <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
+                <textarea name="comment" placeholder="Write your comment here..." required></textarea>
+                <button type="submit" class="btn btn-primary">Post Comment</button>
+            </form>
+        {% else %}
+            <p><a href="/login">Log in</a> to post a comment.</p>
+        {% endif %}
     </div>
+
     <div class="card-footer">
         <strong>
             <a href="{{ musical.official_website }}" target="_blank">Official Website</a>
         </strong>
     </div>
 </section>
-<script src="/static/js/home.js"></script>
 
+<script src="/static/js/home.js"></script>
 {% endblock %}

@@ -3,7 +3,7 @@
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, jsonify, session
+from flask import Flask, request, render_template, g, redirect, Response, jsonify, session, url_for
 from database import runq, engine
 from flask_session import Session
 from flask_bcrypt import Bcrypt
@@ -101,76 +101,135 @@ def search():
         cursor.close()
     return render_template('home.html', musicals=musicals, search_entry=search_entry_ori)
 
+
 @app.route('/broadway_show', methods=['GET'])
 def view_broadway_show():
-    # Get the musical_id from the query string (URL parameter)
     musical_id = request.args.get("id")
-    user_id = session.get('user_id')  # Get user_id if the user is logged in
+    user_id = session.get('user_id')
 
     if not musical_id:
         return apology("Musical ID is required", 400)
 
-    # Retrieve the musical data from the database
+    # Retrieve the musical data
     musical = g.conn.execute(text("""
-        SELECT *
-        FROM musicals
-        WHERE musical_id = :musical_id
+        SELECT * FROM musicals WHERE musical_id = :musical_id
     """), {'musical_id': musical_id}).mappings().fetchone()
 
-    # Check if the musical exists
     if not musical:
         return apology("Musical not found", 404)
     
-    # Retrieve if user has added this musical to their wishlist
+    # Check if the user added this musical to the wishlist
     in_wishlist = False
     if user_id:
         wishlist_entry = g.conn.execute(text("""
-            SELECT 1
-            FROM wishlist
-            WHERE musical_id = :musical_id AND user_id = :user_id
+            SELECT 1 FROM wishlist WHERE musical_id = :musical_id AND user_id = :user_id
         """), {'musical_id': musical_id, 'user_id': user_id}).fetchone()
-        
-        in_wishlist = wishlist_entry is not None  # Set to True if the show is in the wishlist
+        in_wishlist = wishlist_entry is not None
 
+    # Retrieve showtimes, cast, comments, and theatres
+    showtimes = g.conn.execute(text("SELECT * FROM showtimes WHERE musical_id = :musical_id"),
+                               {'musical_id': musical_id}).mappings().fetchall()
     
-    # Retrieve other musical data
-    # Retrieve showtimes for the musical
-    showtimes = g.conn.execute(text("""
-        SELECT *
-        FROM showtimes
-        WHERE musical_id = :musical_id
-    """), {'musical_id': musical_id}).mappings().fetchall()
-
-    # Retrieve cast members for the musical
     cast_members = g.conn.execute(text("""
-        SELECT *
-        FROM cast_members cm
-        JOIN participated p ON cm.actor_id = p.actor_id
+        SELECT * FROM cast_members cm JOIN participated p ON cm.actor_id = p.actor_id
         WHERE p.musical_id = :musical_id
     """), {'musical_id': musical_id}).mappings().fetchall()
-
-    # Retrieve comments for the musical
+    
     comments = g.conn.execute(text("""
-        SELECT *
-        FROM comments c
-        JOIN users u ON c.user_id = u.user_id
-        WHERE c.musical_id = :musical_id
-        ORDER BY c.date_time DESC
+        SELECT * FROM comments c JOIN users u ON c.user_id = u.user_id
+        WHERE c.musical_id = :musical_id ORDER BY c.date_time DESC
     """), {'musical_id': musical_id}).mappings().fetchall()
-
-    # Retrieve theatres where the musical is being shown
+    
     theatres = g.conn.execute(text("""
-        SELECT *
-        FROM theatres t
-        JOIN showing_at sa ON t.theatre_id = sa.theatre_id
+        SELECT * FROM theatres t JOIN showing_at sa ON t.theatre_id = sa.theatre_id
         WHERE sa.musical_id = :musical_id
     """), {'musical_id': musical_id}).mappings().fetchall()
 
-    # Render the template and pass all related data
-    return render_template('broadway_show.html', musical=musical, 
-                           showtimes=showtimes, cast_members=cast_members, 
-                           comments=comments, theatres=theatres, in_wishlist=in_wishlist)
+    # Check watched showtimes for the user
+    watched_showtimes = set()
+    if user_id:
+        watched_showtimes = g.conn.execute(text("""
+            SELECT showtime_id FROM watched WHERE user_id = :user_id AND musical_id = :musical_id
+        """), {'user_id': user_id, 'musical_id': musical_id}).mappings().fetchall()
+        watched_showtimes = {row['showtime_id'] for row in watched_showtimes}
 
+    # Render template with all data
+    return render_template('broadway_show.html', musical=musical, showtimes=showtimes,
+                           cast_members=cast_members, comments=comments, theatres=theatres,
+                           in_wishlist=in_wishlist, watched_showtimes=watched_showtimes)
+
+@app.route('/add_comment', methods=['POST'])
+@login_required
+def add_comment():
+    user_id = session["user_id"]
+    musical_id = request.form.get("musical_id")
+    comment_text = request.form.get("comment")
+    try:
+        g.conn.execute(text("""
+            INSERT INTO comments (user_id, musical_id, comment, date_time)
+            VALUES (:user_id, :musical_id, :comment, NOW())
+        """), {
+            'user_id': user_id,
+            'musical_id': musical_id,
+            'comment': comment_text
+        })
+        g.conn.commit()
+    except Exception as e:
+        print(e)
+        return apology("Failed to add comment", 500)
+
+    # Redirect back to the musical page
+    return redirect('/broadway_show?id=' + musical_id)
+
+@app.route('/add_to_watched', methods=['POST'])
+@login_required
+def add_to_watched():
+    user_id = session["user_id"]
+    musical_id = request.form.get("musical_id")
+    showtime_id = request.form.get("showtime_id")
+    notes = request.form.get("notes")  # Optional notes
+
+    # Insert into the watched table
+    try:
+        g.conn.execute(text("""
+            INSERT INTO watched (user_id, musical_id, showtime_id, notes)
+            VALUES (:user_id, :musical_id, :showtime_id, :notes)
+        """), {
+            'user_id': user_id,
+            'musical_id': musical_id,
+            'showtime_id': showtime_id,
+            'notes': notes
+        })
+        g.conn.commit()
+    except Exception as e:
+        print(e)
+        return apology("Failed to add to watched list", 500)
+
+    # Redirect back to the musical page after adding
+    return redirect(url_for('view_broadway_show', id=musical_id))
+
+@app.route('/remove_from_watched', methods=['POST'])
+@login_required
+def remove_from_watched():
+    user_id = session["user_id"]
+    musical_id = request.form.get("musical_id")
+    showtime_id = request.form.get("showtime_id")
+
+    try:
+        g.conn.execute(text("""
+            DELETE FROM watched
+            WHERE user_id = :user_id AND musical_id = :musical_id AND showtime_id = :showtime_id
+        """), {
+            'user_id': user_id,
+            'musical_id': musical_id,
+            'showtime_id': showtime_id
+        })
+        g.conn.commit()
+    except Exception as e:
+        print(e)
+        return apology("Failed to remove from watched list", 500)
+
+    return redirect(url_for('view_broadway_show', id=musical_id))
 
 @app.route('/theatre', methods=['GET'])
 def view_theatre():
@@ -233,6 +292,40 @@ def view_cast_member():
     return render_template('cast_member.html', cast_member=cast_member, musicals=musicals)
 
 
+@app.route('/user/<int:user_id>')
+@login_required
+def view_user(user_id):
+    # Query user details based on user_id
+    user_query = text("""
+        SELECT username, email, bio, city 
+        FROM users 
+        WHERE user_id = :user_id
+    """)
+    user = g.conn.execute(user_query, {'user_id': user_id}).fetchone()
+
+    if not user:
+        return apology("User not found", 404)
+
+    # Query follower count
+    followers_count_query = text("""
+        SELECT COUNT(*) 
+        FROM follows 
+        WHERE followed_id = :user_id
+    """)
+    followers_count = g.conn.execute(followers_count_query, {'user_id': user_id}).scalar()
+
+    # Query followed count
+    followed_count_query = text("""
+        SELECT COUNT(*) 
+        FROM follows 
+        WHERE follower_id = :user_id
+    """)
+    followed_count = g.conn.execute(followed_count_query, {'user_id': user_id}).scalar()
+
+    return render_template('view_user.html', user=user, 
+                           followers_count=followers_count, followed_count=followed_count)
+
+
 @app.route('/account')
 @login_required
 def account():
@@ -271,7 +364,7 @@ def account():
 
 @app.route('/manage_social', methods=['GET'])
 @login_required
-def add_follow():
+def manage_social():
     user_id = session['user_id']
 
     # Query to retrieve users whom the current user is not following

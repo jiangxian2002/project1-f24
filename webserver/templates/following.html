@@ -5,10 +5,14 @@
 <div class="user-list">
     {% for user in following %}
         <div class="user-card">
-            <p><strong>{{ user.username }}</strong></p>
-            <p>{{ user.bio }}</p>
-            <p>{{ user.city }}</p>
-            <a href="/user/{{ user.user_id }}">View Profile</a>
+            <div class="user-info">
+                <h2>{{ user.username }}</h2>
+                <p class="bio">{{ user.bio if user.bio else "No bio available" }}</p>
+                <p class="city"><i class="fa fa-map-marker-alt"></i> {{ user.city if user.city else "Location unknown" }}</p>
+            </div>
+            <div class="user-actions">
+                <a href="/user/{{ user.user_id }}" class="btn btn-primary">View Profile</a>
+            </div>
         </div>
     {% endfor %}
 </div>

@@ -1,19 +1,122 @@
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
+
+
+/* General Styles */
 * {
     margin: 0;
     padding: 0;
-}
-
-:root {
-    --primary-color: #0033A0;
-    --white-color: #FFFFFF;
-    --grey-color: #C4C4C4;
+    box-sizing: border-box;
+    font-family: 'Jost', sans-serif;
 }
 
 body {
-    font-family: 'Jost', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* Header */
+header {
+    background-color: #1a73e8;
+    color: white;
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo a {
+    color: white;
+    font-size: 1.5em;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.nav-container {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-links {
+    list-style-type: none;
+    display: flex;
+    gap: 15px;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: #ffd700;
+}
+
+/* Hamburger Menu */
+#hamburger {
+    background: none;
+    border: none;
+    color: white;
+    display: none; /* Hidden by default, visible in mobile */
+}
+
+#hamburger i {
+    font-size: 1.5em;
+}
+
+/* Main Content */
+main {
+    padding: 20px;
+}
+
+.content-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px 20px;
+    background-color: #1a73e8;
+    color: white;
+    font-size: 0.9em;
+    margin-top: 20px;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    #hamburger {
+        display: inline; /* Show hamburger menu on mobile */
+    }
+    .nav-container {
+        display: none;
+    }
+
+    /* Dropdown menu styles */
+    .nav-dropdown {
+        display: flex;
+        flex-direction: column;
+        background-color: #1a73e8;
+        position: absolute;
+        top: 60px;
+        width: 100%;
+        padding: 10px 0;
+    }
 }
 
 ul {
@@ -23,10 +126,6 @@ ul {
 a {
     text-decoration: none;
     color: black;
-}
-
-main {
-    padding: 20px;
 }
 
 img {
@@ -83,90 +182,127 @@ nav {
     padding: 20px;
 }
 
+/* Search Bar */
 #search {
+    max-width: 800px;
+    margin: 20px auto;
     display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-bottom: 5vh;
+    justify-content: center;
 }
 
 .search-bar {
-    border-radius: 8px;
-    background-color: rgba(229, 229, 229, 0.33);
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 8px 5px 8px 5px;
-    flex: 1;
+    background-color: #f2f2f2;
+    padding: 8px;
+    border-radius: 25px;
 }
 
-#search input {
-    background-color: transparent;
+.search-bar input[type="text"] {
+    flex: 1;
     border: none;
     outline: none;
-    flex: 1;
-    padding-left: 10px;
-    
+    background: transparent;
+    padding: 8px;
+    font-size: 16px;
 }
 
-#search button {
-    outline: none;
+.search-bar button {
+    background-color: #2a7bdb;
+    color: white;
     border: none;
-    background-color: transparent;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
 }
-#search input, button {
-    padding: 5px 10px 5px 10px;
+
+.search-bar button:hover {
+    background-color: #1a5cb3;
 }
+
+.search-bar button i {
+    font-size: 18px;
+}
+
 
 /*--------------------------------------------------------------
 # Card Styles
 --------------------------------------------------------------*/
-.card {
-    border: 3px solid var(--primary-color);
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    padding: 15px;
-    gap: 10px;  
+
+
+/* Card Layout */
+#home {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
 }
 
-.card-img {
+.listing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Musical Card */
+.card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.02);
 }
 
 .card-header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    height: 25%;
+    text-align: center;
+    font-size: 1.2em;
+    margin-bottom: 10px;
 }
 
-.card-body {
-    margin: 5px 0px 5px 0px;
-    height: 50%;
+.card-header a {
+    color: #2a7bdb;
+    text-decoration: none;
 }
 
-.profile-image {
-    width: 30px;
-    height: 30px;
+.card-header a:hover {
+    text-decoration: underline;
 }
 
-.profile-image img {
-    object-fit: cover;
-    border-radius: 50%;
+.card-body p {
+    margin: 5px 0;
+    font-size: 0.95em;
+    color: #555;
+}
+
+.card-body strong {
+    color: #333;
 }
 
 .card-footer {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    cursor: pointer;
-    height: 25%;
+    margin-top: auto;
+    text-align: right;
 }
+
+.card-footer a {
+    color: #1a73e8;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.card-footer a:hover {
+    color: #155a9b;
+}
+
+
 /*--------------------------------------------------------------
 # Authentication
 --------------------------------------------------------------*/
@@ -340,10 +476,124 @@ label[for=image-entry] {
 
 
 /*--------------------------------------------------------------
-# Service
+# Musical
 --------------------------------------------------------------*/
 
+/* Musical Page Layout */
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
 
+.musical-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.musical-header h1 {
+    font-size: 2em;
+    font-weight: 600;
+    color: #1a73e8;
+    margin: 0;
+}
+
+.wishlist-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: #1a73e8;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #155a9b;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background-color: #b02a37;
+}
+
+.musical-content p {
+    font-size: 1em;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.additional-info h2 {
+    font-size: 1.5em;
+    font-weight: 500;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.info-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.info-list li {
+    margin-bottom: 8px;
+}
+
+.comment {
+    padding: 10px;
+    background-color: #f1f8ff;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Comment Form and List */
+.comment-form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comment-form textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical;
+}
+
+.comment-form button {
+    align-self: flex-start;
+}
+
+.info-list .comment {
+    background-color: #f8f9fa;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.info-list .comment strong {
+    color: #333;
+}
 
 /*--------------------------------------------------------------
 # Edit Service
@@ -676,4 +926,112 @@ label[for=image-entry] {
 
 .logout-btn:hover {
     background-color: #e03b3b;
+}
+
+
+/*--------------------------------------------------------------
+# Manage Social Connections Page Styles
+--------------------------------------------------------------*/
+
+.manage-social {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.manage-social h1 {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.social-section {
+    margin-top: 30px;
+}
+
+.social-section h2 {
+    font-size: 1.5em;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.user-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.user-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-card p {
+    margin: 5px 0;
+}
+
+.user-bio {
+    color: #777;
+    font-size: 0.9em;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.follow-btn,
+.unfollow-btn,
+.remove-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    font-size: 0.9em;
+}
+
+.follow-btn {
+    background-color: #2a7bdb;
+    color: white;
+}
+
+.follow-btn:hover {
+    background-color: #1a5cb3;
+}
+
+.unfollow-btn {
+    background-color: #ff4c4c;
+    color: white;
+}
+
+.unfollow-btn:hover {
+    background-color: #e03b3b;
+}
+
+.remove-btn {
+    background-color: #ff8c00;
+    color: white;
+}
+
+.remove-btn:hover {
+    background-color: #e07b00;
+}
+
+.view-profile-link {
+    color: #2a7bdb;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.view-profile-link:hover {
+    text-decoration: underline;
 }
