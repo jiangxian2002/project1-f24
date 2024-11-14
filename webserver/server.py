@@ -463,6 +463,64 @@ def remove_follow():
 
     return redirect('/manage_social')
 
+
+@app.route('/manage_showtimes', methods=['GET'])
+@login_required
+def manage_showtimes():
+    user_id = session['user_id']
+
+    # Query to retrieve all musicals the user has watched
+    watched_musicals = g.conn.execute(text("""
+        SELECT DISTINCT m.musical_id, m.title
+        FROM watched w
+        JOIN musicals m ON w.musical_id = m.musical_id
+        WHERE w.user_id = :user_id
+        ORDER BY m.title
+    """), {'user_id': user_id}).mappings().fetchall()
+
+    # Dictionary to store showtimes grouped by musical_id
+    watched_musicals_showtimes = {}
+    for musical in watched_musicals:
+        musical_id = musical["musical_id"]
+        showtimes = g.conn.execute(text("""
+            SELECT s.date, s.start_time, w.notes, w.showtime_id, m.title
+            FROM watched w
+            JOIN showtimes s ON w.showtime_id = s.showtime_id AND w.musical_id = s.musical_id
+            JOIN musicals m ON w.musical_id = m.musical_id
+            WHERE w.user_id = :user_id AND w.musical_id = :musical_id
+            ORDER BY s.date ASC, s.start_time ASC
+        """), {'user_id': user_id, 'musical_id': musical_id}).mappings().fetchall()
+        
+        # Store the showtimes for each musical
+        watched_musicals_showtimes[musical_id] = showtimes
+        
+    return render_template('manage_showtimes.html', watched_musicals=watched_musicals, watched_musicals_showtimes=watched_musicals_showtimes)
+
+@app.route('/update_notes', methods=['POST'])
+@login_required
+def update_notes():
+    user_id = session["user_id"]
+    musical_id = request.form.get("musical_id")
+    showtime_id = request.form.get("showtime_id")
+    notes = request.form.get("notes")
+    try:
+        g.conn.execute(text("""
+            UPDATE watched
+            SET notes = :notes
+            WHERE user_id = :user_id AND musical_id = :musical_id AND showtime_id = :showtime_id
+        """), {
+            'notes': notes,
+            'user_id': user_id,
+            'musical_id': musical_id,
+            'showtime_id': showtime_id
+        })
+        g.conn.commit()
+    except Exception as e:
+        print(e)
+        return apology("Failed to update notes", 500)
+
+    return redirect(url_for('manage_showtimes'))
+
 @app.route('/manage_wishlist', methods=['GET'])
 @login_required
 def manage_wishlist():
