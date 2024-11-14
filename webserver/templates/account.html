@@ -5,26 +5,32 @@
     <div class="details">
         <h1>{{ user.username }}</h1>
         <p>Email: {{ user.email }}</p>
-        {% if user.bio %}
-                <p>Bio: {{ user.bio }}</p>
-                <button id="edit-profile-btn">Edit Bio</button>
-        {% else %}
-                <p>Bio: <em>No bio yet</em></p>
-                <button id="edit-profile-btn">Add Bio</button>
-        {% endif %}
-        {% if user.city %}
-                <p>City: {{ user.city }}</p>
-                <button id="edit-profile-btn">Edit City</button>
-        {% else %}
-                <p>City: <em>No city yet</em></p>
-                <button id="edit-profile-btn">Add City</button>
-        {% endif %}
-        <a href="/user/followers">
-                Followers: {{ followers_count }}
-        </a> | 
-        <a href="/user/following">
-                Following: {{ followed_count }}
-        </a>
+        <p>
+                Bio: <span id="bio-text">{{ user.bio if user.bio else "No bio yet" }}</span>
+                <input type="text" id="bio-input" value="{{ user.bio }}" style="display: none;">
+                <button id="bio-submit" style="display: none;" onclick="submitChange('bio')">Submit</button>
+                <a href="javascript:void(0);" onclick="toggleEdit('bio');" class="edit-icon">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+        </p>
+        
+        <p>
+                City: <span id="city-text">{{ user.city if user.city else "No city yet" }}</span>
+                <button id="bio-submit" style="display: none;" onclick="submitChange('bio')">Submit</button>
+                <input type="text" id="city-input" value="{{ user.city }}" style="display: none;">
+                <a href="javascript:void(0);" onclick="toggleEdit('city');" class="edit-icon">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+        </p>
+
+        <p>
+                <a href="/user/followers">
+                        Followers: {{ followers_count }}
+                </a> | 
+                <a href="/user/following">
+                        Following: {{ followed_count }}
+                </a>
+        </p>
     </div>
 </section>
 
@@ -32,5 +38,50 @@
     <button formaction="/logout">Log Out</button>
 </form>
 
+
+<script>
+        function toggleEdit(field) {
+            const textElement = document.getElementById(`${field}-text`);
+            const inputElement = document.getElementById(`${field}-input`);
+    
+            // Toggle display between text and input field
+            if (textElement.style.display === 'none') {
+                textElement.style.display = 'inline';
+                inputElement.style.display = 'none';
+            } else {
+                textElement.style.display = 'none';
+                inputElement.style.display = 'inline';
+                inputElement.focus();
+    
+                // Save changes when the input loses focus
+                inputElement.addEventListener("blur", function() {
+                    saveChanges(field, inputElement.value);
+                }, { once: true }); // The { once: true } option ensures the listener is added only once
+            }
+        }
+    
+        function saveChanges(field, value) {
+            const url = field === "bio" ? "/update_bio" : "/update_city";
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ value: value }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the displayed text with the new value
+                    document.getElementById(`${field}-text`).textContent = value || (field === 'bio' ? "No bio yet" : "No city yet");
+                    toggleEdit(field); // Toggle back to display mode
+                } else {
+                    alert("Failed to save changes: " + data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+</script>
+        
 <script src="/static/js/home.js"></script>
 {% endblock %}

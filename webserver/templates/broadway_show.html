@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>{{ musical.title }}</h1>
+<section id="home">
+    <div>
+    <p><strong>Description: </strong>{{ musical.description }}</p>
+    <p><strong>Opening Date: </strong>{{ musical.opening_date }}</p>
+    <p><strong>Closing Date: </strong>{{ musical.closing_date }}</p>
+    <p><strong>City: </strong>{{ musical.city }}</p>
+    <h2>Showtimes</h2>
+        <ul>
+            {% for showtime in showtimes %}
+                <li>{{ showtime.date }} at {{ showtime.start_time }}</li>
+            {% endfor %}
+        </ul>
+
+    <h2>Cast Members</h2>
+    <ul>
+        {% for cast_member in cast_members %}
+            <li>{{ cast_member.first_name }} {{ cast_member.last_name }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Comments</h2>
+    <ul>
+        {% for comment in comments %}
+            <li><strong>{{ comment.username }}:</strong> {{ comment.comment }} ({{ comment.date_time }})</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Theatres</h2>
+    <ul>
+        {% for theatre in theatres %}
+            <li>
+                <a href="{{ url_for('view_theatre', theatre_id=theatre.theatre_id) }}">
+                    {{ theatre.name }}
+                </a> - {{ theatre.location }} ({{ theatre.start_date }} - {{ theatre.end_date }})
+            </li>
+        {% endfor %}
+    </ul>
+
+    </div>
+    <div class="card-footer">
+        <strong>
+            <a href="{{ musical.official_website }}" target="_blank">Official Website</a>
+        </strong>
+    </div>
+    <div class="card-footer">
+        <strong>
+            <a href="/home">Back to Home</a>
+        </strong>
+    </div>
+</section>
+<script src="/static/js/home.js"></script>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1>{{ theatre.name }}</h1>
+<p><strong>Location:</strong> {{ theatre.location }}</p>
+<p><strong>Information:</strong> {{ theatre.info }}</p>
+
+<h2>Musicals Shown Here</h2>
+<ul>
+    {% for musical in musicals %}
+        <li>
+            <a href="{{ url_for('view_broadway_show', id=musical.musical_id) }}">
+                {{ musical.title }}
+            </a> ({{ musical.start_date }} - {{ musical.end_date }})
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

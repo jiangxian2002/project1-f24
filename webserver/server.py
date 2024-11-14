@@ -47,17 +47,17 @@ def teardown_request(exception):
     pass
 
 @app.route('/')
-@login_required
 def index():
     # Fetch all columns for each musical
     cursor = g.conn.execute(text("""
-        SELECT title, description, opening_date, closing_date, official_website, city 
+        SELECT * 
         FROM musicals
     """)).mappings()
     
     # Organize data as a list of dictionaries for easy access in the template
     musicals = [
         {
+            'musical_id': row['musical_id'],
             'title': row['title'],
             'description': row['description'],
             'opening_date': row['opening_date'],
@@ -72,7 +72,6 @@ def index():
     return render_template("home.html", musicals=musicals)
 
 @app.route('/search', methods=['GET', 'POST'])
-@login_required
 def search():
     search_entry_ori = request.args.get('search-entry', '')
     search_entry = search_entry_ori.lower()
@@ -82,13 +81,14 @@ def search():
     musicals = []
     if search_entry:
         cursor = g.conn.execute(text("""
-            SELECT title, description, opening_date, closing_date, official_website, city 
+            SELECT * 
             FROM musicals
             WHERE LOWER(title) LIKE :search_entry
         """), {'search_entry': f"%{search_entry}%"}).mappings()
         
         musicals = [
             {
+                'musical_id': row['musical_id'],
                 'title': row['title'],
                 'description': row['description'],
                 'opening_date': row['opening_date'],
@@ -100,6 +100,97 @@ def search():
         ]
         cursor.close()
     return render_template('home.html', musicals=musicals, search_entry=search_entry_ori)
+
+@app.route('/broadway_show', methods=['GET'])
+def view_broadway_show():
+    # Get the musical_id from the query string (URL parameter)
+    musical_id = request.args.get("id")
+    print(id)
+
+    if not musical_id:
+        return apology("Musical ID is required", 400)
+
+    # Retrieve the musical data from the database
+    musical = g.conn.execute(text("""
+        SELECT *
+        FROM musicals
+        WHERE musical_id = :musical_id
+    """), {'musical_id': musical_id}).mappings().fetchone()
+
+    # Check if the musical exists
+    if not musical:
+        return apology("Musical not found", 404)
+    
+    # Retrieve other musical data
+    # Retrieve showtimes for the musical
+    showtimes = g.conn.execute(text("""
+        SELECT *
+        FROM showtimes
+        WHERE musical_id = :musical_id
+    """), {'musical_id': musical_id}).mappings().fetchall()
+
+    # Retrieve cast members for the musical
+    cast_members = g.conn.execute(text("""
+        SELECT cm.*
+        FROM cast_members cm
+        JOIN participated p ON cm.actor_id = p.actor_id
+        WHERE p.musical_id = :musical_id
+    """), {'musical_id': musical_id}).mappings().fetchall()
+
+    # Retrieve comments for the musical
+    comments = g.conn.execute(text("""
+        SELECT c.*, u.username
+        FROM comments c
+        JOIN users u ON c.user_id = u.user_id
+        WHERE c.musical_id = :musical_id
+        ORDER BY c.date_time DESC
+    """), {'musical_id': musical_id}).mappings().fetchall()
+
+    # Retrieve theatres where the musical is being shown
+    theatres = g.conn.execute(text("""
+        SELECT t.*, sa.start_date, sa.end_date
+        FROM theatres t
+        JOIN showing_at sa ON t.theatre_id = sa.theatre_id
+        WHERE sa.musical_id = :musical_id
+    """), {'musical_id': musical_id}).mappings().fetchall()
+
+    # Render the template and pass all related data
+    return render_template('broadway_show.html', musical=musical, 
+                           showtimes=showtimes, cast_members=cast_members, 
+                           comments=comments, theatres=theatres)
+
+
+@app.route('/theatre', methods=['GET'])
+def view_theatre():
+    # Get the theatre_id from the query string (URL parameter)
+    theatre_id = request.args.get("theatre_id")
+
+    if not theatre_id:
+        return apology("Theatre ID is required", 400)
+
+    # Retrieve theatre details
+    theatre = g.conn.execute(text("""
+        SELECT *
+        FROM theatres
+        WHERE theatre_id = :theatre_id
+    """), {'theatre_id': theatre_id}).mappings().fetchone()
+
+    if not theatre:
+        return apology("Theatre not found", 404)
+
+    # Retrieve musicals shown at the theatre with their respective dates
+    musicals = g.conn.execute(text("""
+        SELECT m.musical_id, m.title, sa.start_date, sa.end_date
+        FROM musicals m
+        JOIN showing_at sa ON m.musical_id = sa.musical_id
+        WHERE sa.theatre_id = :theatre_id
+        ORDER BY sa.start_date DESC
+    """), {'theatre_id': theatre_id}).mappings().fetchall()
+
+    # Render the template and pass the theatre and musicals data
+    return render_template('theatre.html', theatre=theatre, musicals=musicals)
+
+
 
 @app.route('/account')
 @login_required
@@ -136,6 +227,28 @@ def account():
     # Render the account page with the retrieved data
     return render_template('account.html', user=user, 
                            followers_count=followers_count, followed_count=followed_count)
+
+
+@app.route('/update_bio', methods=['POST'])
+@login_required
+def update_bio():
+    user_id = session['user_id']
+    new_bio = request.json.get('value')
+
+    if new_bio is None:
+        return Response("No bio provided", status=400)
+
+    # Update the bio in the database
+    update_bio_query = text("""
+        UPDATE users 
+        SET bio = :new_bio 
+        WHERE user_id = :user_id
+    """)
+    g.conn.execute(update_bio_query, {'new_bio': new_bio, 'user_id': user_id})
+
+    return Response("Bio updated successfully", status=200)
+
+
 
 @app.route('/user/followers')
 @login_required
