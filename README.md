@@ -139,11 +139,14 @@ Can delete showtimes or edit their notes for the showtimes that they have gone t
 #### Musical page with login 
 <img width="1512" alt="image" src="https://github.com/user-attachments/assets/6b6bebaf-ee53-4cd8-9d35-2f5672acc20b">
 Add / remove wishlist functionality appears
+
+
 <img width="880" alt="image" src="https://github.com/user-attachments/assets/124013f3-19aa-4014-9b4c-b087f531de65">
 Add (with or without notes) / remove showtime functionality appears
 
-<img width="884" alt="image" src="https://github.com/user-attachments/assets/ea873d65-dbc6-41b4-ba7c-65f1df65ff4d">
+
 Can now post comments
+<img width="884" alt="image" src="https://github.com/user-attachments/assets/ea873d65-dbc6-41b4-ba7c-65f1df65ff4d">
 <img width="886" alt="image" src="https://github.com/user-attachments/assets/2fbd4b80-3ab8-4a14-bb97-dfd31322bc25">
 
 
