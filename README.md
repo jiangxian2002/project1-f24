@@ -139,7 +139,9 @@ We want to build a recommendation system, which will suggest musicals to every u
 <img width="1502" alt="image" src="https://github.com/user-attachments/assets/4b2fc51e-85de-44fd-94bd-eda59e211818">
 
 Can delete showtimes or edit their notes for the showtimes that they have gone to
+
 <img width="382" alt="image" src="https://github.com/user-attachments/assets/971e5068-3833-4e05-94cb-1b14e3ad8ff7">
+
 <img width="382" alt="image" src="https://github.com/user-attachments/assets/d713a3b4-d4e8-4f80-8f82-054f2b2170bc">
 
 
