@@ -54,7 +54,7 @@ List of musicals that can be clicked on to display more details
 #### Search function supported
 <img width="1511" alt="image" src="https://github.com/user-attachments/assets/b101a21c-458a-4dee-bd70-1c06accebb9f">
 
-Search for titles that contain the search string (case ignored)
+Searches for titles that contain the search string (case ignored)
 
 #### Musical Page 
 <img width="1510" alt="image" src="https://github.com/user-attachments/assets/15a1e73b-7535-4905-964b-2417c49fde9f">
