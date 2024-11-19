@@ -534,7 +534,94 @@ def manage_wishlist():
         WHERE w.user_id = :user_id
     """), {'user_id': user_id}).mappings().fetchall()
 
-    return render_template('manage_wishlist.html', wishlist_shows=wishlist_shows)
+        # Query to retrieve friends with common wishlisted musicals and watch status
+    common_wishlist_query = text("""
+        WITH bidirectional_friends AS (
+            SELECT f1.follower_id AS user_id, f1.followed_id AS friend_id
+            FROM follows f1
+            JOIN follows f2
+              ON f1.follower_id = f2.followed_id
+              AND f1.followed_id = f2.follower_id
+        ),
+        wishlisted_musicals AS (
+            SELECT DISTINCT user_id, musical_id
+            FROM wishlist
+        ),
+        watched_musicals AS (
+            SELECT DISTINCT user_id, musical_id
+            FROM watched
+        )
+        SELECT wm1.musical_id, u2.username AS friend, 
+               CASE WHEN wm2_watched.musical_id IS NOT NULL THEN 'Watched' ELSE 'Not Watched' END AS watched_status
+        FROM bidirectional_friends bf
+        JOIN wishlisted_musicals wm1
+          ON bf.user_id = wm1.user_id
+        JOIN wishlisted_musicals wm2
+          ON bf.friend_id = wm2.user_id AND wm1.musical_id = wm2.musical_id
+        LEFT JOIN watched_musicals wm2_watched
+          ON wm2.user_id = wm2_watched.user_id AND wm2.musical_id = wm2_watched.musical_id
+        JOIN users u2 ON bf.friend_id = u2.user_id
+        WHERE bf.user_id = :user_id
+        ORDER BY wm1.musical_id, u2.username;
+    """)
+
+    common_wishlist = g.conn.execute(common_wishlist_query, {'user_id': user_id}).mappings().fetchall()
+
+    # Group the common wishlist by musical_id
+    from collections import defaultdict
+    common_wishlist_by_musical = defaultdict(list)
+    for entry in common_wishlist:
+        common_wishlist_by_musical[entry['musical_id']].append({
+            'friend': entry['friend'],
+            'watched_status': entry['watched_status']
+        })
+
+    recommendation_query = text("""
+        WITH bidirectional_friends AS (
+            SELECT DISTINCT f1.follower_id AS user_id, f1.followed_id AS friend_id
+            FROM follows f1
+            JOIN follows f2
+              ON f1.follower_id = f2.followed_id
+              AND f1.followed_id = f2.follower_id
+        ),
+        friends_watched_multiple AS (
+            SELECT wm.user_id AS friend_id, wm.musical_id, COUNT(*) AS watch_count
+            FROM watched wm
+            JOIN bidirectional_friends bf ON wm.user_id = bf.friend_id
+            GROUP BY wm.user_id, wm.musical_id
+            HAVING COUNT(*) > 1
+        ),
+        recommended_musicals AS (
+            SELECT DISTINCT bf.user_id, fwm.friend_id, fwm.musical_id, m.title AS musical_title, m.city, m.opening_date, m.closing_date, m.description
+            FROM friends_watched_multiple fwm
+            JOIN bidirectional_friends bf ON fwm.friend_id = bf.friend_id
+            JOIN musicals m ON fwm.musical_id = m.musical_id
+            WHERE NOT EXISTS (
+              SELECT 1
+              FROM wishlist w
+              WHERE w.user_id = bf.user_id
+                AND w.musical_id = fwm.musical_id
+              UNION
+              SELECT 1
+              FROM watched ww
+              WHERE ww.user_id = bf.user_id
+                AND ww.musical_id = fwm.musical_id
+            )
+        )
+        SELECT DISTINCT rm.musical_title, rm.musical_id, rm.city, rm.opening_date, rm.closing_date, rm.description
+        FROM recommended_musicals rm
+        WHERE rm.user_id = :user_id
+        ORDER BY rm.musical_title;
+    """)
+
+    recommendations = g.conn.execute(recommendation_query, {'user_id': user_id}).mappings().fetchall()
+
+    return render_template(
+        'manage_wishlist.html',
+        wishlist_shows=wishlist_shows,
+        common_wishlist_by_musical=common_wishlist_by_musical,
+        recommendations=recommendations
+    )
 
 @app.route('/add_to_wishlist', methods=['POST'])
 @login_required

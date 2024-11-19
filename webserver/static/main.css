@@ -162,13 +162,17 @@ a {
     color: black;
 }
 
+.logo a {
+    color: var(--white-color);
+}
+
 img {
     width: 100%;
     height: 100%;
 }
 
 /*--------------------------------------------------------------
-# Navigation Bar Styles
+# Search Bar Styles
 --------------------------------------------------------------*/
 nav {
     padding: 20px;
@@ -178,21 +182,6 @@ nav {
     background-color: var(--primary-color);
     color: var(--white-color);
     align-items: center;
-}
-
-.logo a {
-    color: var(--white-color);
-}
-
-.nav-container {
-    display: none;
-}
-
-#hamburger {
-    border: none;
-    outline: none;
-    background-color: transparent;
-    color: white
 }
 
 /* Search Bar */
@@ -228,8 +217,11 @@ nav {
     border-radius: 50%;
     padding: 10px;
     cursor: pointer;
-    font-size: 16px;
     transition: background-color 0.2s;
+}
+
+.search-bar {
+    font-size: 16px;
 }
 
 .search-bar button:hover {
@@ -836,6 +828,15 @@ label[for=image-entry] {
     margin-bottom: 10px;
 }
 
+.wishlist-title a {
+    color: inherit;
+    text-decoration: none; 
+}
+
+.wishlist-title a:hover {
+    color: #1a5cb3;
+}
+
 .wishlist-card p {
     margin: 5px 0;
     color: #555;
@@ -849,7 +850,7 @@ label[for=image-entry] {
     margin-top: 15px;
     padding: 8px 15px;
     border: none;
-    background-color: #ff4c4c;
+    background-color: #dc3545;
     color: white;
     border-radius: 5px;
     cursor: pointer;
@@ -858,8 +859,25 @@ label[for=image-entry] {
 }
 
 .wishlist-remove-btn:hover {
-    background-color: #e03b3b;
+    background-color: #b02a37;
 }
+
+.wishlist-add-btn {
+    margin-top: 15px;
+    padding: 8px 15px;
+    border: none;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.wishlist-add-btn:hover {
+    background-color: #45a049;
+}
+
 
 /*--------------------------------------------------------------
 ```css

@@ -6,16 +6,56 @@
     <div class="wishlist-list">
         {% for show in wishlist_shows %}
             <div class="wishlist-card">
-                <h3 class="wishlist-title">{{ show.title }}</h3>
+                <h3 class="wishlist-title">
+                    <a href="{{ url_for('view_broadway_show', musical_id=show.musical_id) }}">{{ show.title }}</a>
+                </h3>
                 <p><strong>Description:</strong> {{ show.description }}</p>
                 <p><strong>Opening Date:</strong> {{ show.opening_date }}</p>
                 <p><strong>Closing Date:</strong> {{ show.closing_date }}</p>
+                <!-- Friends with Common Wishlist -->
+                {% if show.musical_id in common_wishlist_by_musical %}
+                    <div class="common-wishlist">
+                        <h4>Friends Who Also Wishlisted:</h4>
+                        <ul>
+                            {% for entry in common_wishlist_by_musical[show.musical_id] %}
+                                <li>
+                                    {{ entry.friend }} - {{ entry.watched_status }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% else %}
+                    <p>No friends have wishlisted this musical yet.</p>
+                {% endif %}
                 <form action="{{ url_for('remove_from_wishlist') }}" method="post">
                     <input type="hidden" name="musical_id" value="{{ show.musical_id }}">
                     <button type="submit" class="wishlist-remove-btn">Remove from Wishlist</button>
                 </form>
             </div>
         {% endfor %}
+    </div>
+</section>
+
+<section id="wishlist">
+    <h1>Recommendations for Wishlist</h1>
+    <div class="wishlist-list">
+        {% for show in recommendations %}
+            <div class="wishlist-card">
+                <h3 class="wishlist-title">
+                    <a href="{{ url_for('view_broadway_show', musical_id=show.musical_id) }}">{{ show.musical_title }}</a>
+                </h3>
+                <p><strong>Description:</strong> {{ show.description }}</p>
+                <p><strong>Opening Date:</strong> {{ show.opening_date }}</p>
+                <p><strong>Closing Date:</strong> {{ show.closing_date }}</p>
+                <form action="{{ url_for('add_to_wishlist') }}" method="post">
+                    <input type="hidden" name="musical_id" value="{{ show.musical_id }}">
+                    <button type="submit" class="wishlist-add-btn">Add to Wishlist</button>
+                </form>
+            </div>
+        {% endfor %}
+        {% if not recommendations %}
+            <p>No recommendations available at this time.</p>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

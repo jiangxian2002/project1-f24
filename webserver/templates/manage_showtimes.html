@@ -30,7 +30,7 @@
                         <form action="{{ url_for('remove_from_watched') }}" method="post" class="remove-form">
                             <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
                             <input type="hidden" name="showtime_id" value="{{ showtime.showtime_id }}">
-                            <button type="submit" class="btn btn-danger">Remove from Watched</button>
+                            <button type="submit" class="wishlist-remove-btn">Remove from Watched</button>
                         </form>
                     </li>
                 {% endfor %}

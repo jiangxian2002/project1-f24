@@ -14,3 +14,26 @@ DB_USER="your_username"
 DB_PASSWORD="your_password"
 
 DB_SERVER="your_server"
+
+
+## Example Credentials
+
+Username: amy
+
+Email: amy@123.com
+
+Password: amy
+
+
+Username: abc
+
+Email: abc@123.com
+
+Password: abc
+
+
+Username: test
+
+Email: test@123.com
+
+Password: test

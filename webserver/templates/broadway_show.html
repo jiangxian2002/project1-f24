@@ -60,6 +60,9 @@
                     {% endif %}
                 </div>
             {% endfor %}
+            {% if not showtimes %}
+                <p>No showtimes available yet.</p>
+            {% endif %}
         </div>
         <h2>Cast Members</h2>
         <ul class="info-list">
@@ -70,6 +73,9 @@
                     </a> - ({{ cast_member.start_date }} - {{ cast_member.end_date }})
                 </li>
             {% endfor %}
+            {% if not cast_members %}
+                <p>No cast members available yet.</p>
+            {% endif %}
         </ul>
 
         <h2>Theatres</h2>
