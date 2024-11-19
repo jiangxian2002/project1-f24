@@ -40,3 +40,32 @@ Username: test
 Email: test@123.com
 
 Password: test
+
+
+## Features
+
+### Without Login
+
+#### Homepage
+<img width="1506" alt="image" src="https://github.com/user-attachments/assets/377da671-630a-4ccf-9ec0-9dfe7a90de9f">
+
+List of musicals that can be clicked on to display more details
+
+#### Search function supported
+<img width="1511" alt="image" src="https://github.com/user-attachments/assets/b101a21c-458a-4dee-bd70-1c06accebb9f">
+
+Search for titles that contain the search string (case ignored)
+
+#### Musical Page 
+<img width="1510" alt="image" src="https://github.com/user-attachments/assets/15a1e73b-7535-4905-964b-2417c49fde9f">
+
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/a4f53f77-9e7c-4d4b-a162-a826ec3dc96f">
+Links to theatres and cast members
+
+Require login to comment
+
+
+### User Features with Login
+
+
+
