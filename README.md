@@ -87,7 +87,7 @@ Users can register for an account
 #### Accounts page
 <img width="1506" alt="image" src="https://github.com/user-attachments/assets/732136cd-e06d-4df1-9346-4be70d136b25">
 
-Can update their bio and city, view followers and following, and logout.
+Can update their bio and city, view followers and following, and log out.
 
 
 #### Following page 
@@ -100,11 +100,33 @@ Similar
 
 #### Manage Social Page
 <img width="1506" alt="image" src="https://github.com/user-attachments/assets/550c809e-336e-48cf-91d0-987f9312c242">
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/e912a6d1-60c4-4232-a585-78443a4f5f38">
+<img width="1507" alt="image" src="https://github.com/user-attachments/assets/00f739b3-a726-4fa9-8918-16ddc9ad9e68">
 
-Allow for follow, unfollow, and remove follow
+Allow for follow, unfollow, and remove follow functionalities
 Links to each profile
 
-### User page
+#### User page
 <img width="1512" alt="image" src="https://github.com/user-attachments/assets/3fe20bf4-9dcf-4f5f-bd22-032ce58f923f">
 Display some basic information on that user 
+
+
+#### My Wishlist Page
+<img width="1505" alt="image" src="https://github.com/user-attachments/assets/d0f8a01c-d14c-4304-9a75-d8cc591db2a9">
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/4a87c707-01b0-4920-881c-49039cdb19da">
+
+Shows all the musicals that the user has added to their wishlist
+
+Can remove musicals from wishlist
+
+Displays if other friends (bidirectional follows) have added the same musical to their wishlist, as well as their watch status (Useful for determining if there is anyone they can go watch that musical will)
+
+
+Recommendations for wishlist are also displayed, and users can conveniently add that musical to their wishlist
+
+We want to build a recommendation system, which will suggest musicals to every user based on the musicals that their friends enjoy (so much so that they have watched it twice, thrice, or even more). (Excludes shows that the user has watched or already added to their wishlist.)
+
+
+
+
 
