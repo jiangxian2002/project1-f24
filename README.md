@@ -27,7 +27,7 @@ Username: amy
 
 Email: amy@123.com
 
-Password: may
+Password: amy
 
 
 **ACCOUNT 2:**
