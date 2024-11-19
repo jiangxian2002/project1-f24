@@ -10,13 +10,13 @@ The application is a social platform where users can share, review, and discuss 
 [http://35.185.108.243:8111/](http://35.185.108.243:8111/)
 
 ## How to Run
-Use .env file and dotenv module to load database credentials
+Use a .env file and dotenv module to load database credentials
 
+```
 DB_USER="your_username"
-
 DB_PASSWORD="your_password"
-
 DB_SERVER="your_server"
+```
 
 
 ## Example Credentials
@@ -27,11 +27,11 @@ Email: amy@123.com
 Password: amy
 
 
-Username: abc
+Username: ABC
 
 Email: abc@123.com
 
-Password: abc
+Password: ABC
 
 
 Username: test
@@ -82,4 +82,29 @@ Users can register for an account
 
 #### Homepage after login
 <img width="1512" alt="image" src="https://github.com/user-attachments/assets/e060b09f-e303-414e-9c9d-35710937cefc">
+
+
+#### Accounts page
+<img width="1506" alt="image" src="https://github.com/user-attachments/assets/732136cd-e06d-4df1-9346-4be70d136b25">
+
+Can update their bio and city, view followers and following, and logout.
+
+
+#### Following page 
+<img width="1506" alt="image" src="https://github.com/user-attachments/assets/463c0fa4-cd7e-4375-b530-9e191d37a482">
+Links to profile
+
+#### Followers page
+Similar
+
+
+#### Manage Social Page
+<img width="1506" alt="image" src="https://github.com/user-attachments/assets/550c809e-336e-48cf-91d0-987f9312c242">
+
+Allow for follow, unfollow, and remove follow
+Links to each profile
+
+### User page
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/3fe20bf4-9dcf-4f5f-bd22-032ce58f923f">
+Display some basic information on that user 
 
