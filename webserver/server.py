@@ -8,7 +8,6 @@ from database import runq, engine
 from flask_session import Session
 from flask_bcrypt import Bcrypt
 from helpers import apology, login_required
-from werkzeug.utils import secure_filename
 import uuid as uuid
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
