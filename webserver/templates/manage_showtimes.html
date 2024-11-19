@@ -1,45 +1,49 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h1>Manage Watched Showtimes</h1>
-
-{% for musical in watched_musicals %}
-    <div class="musical-section">
-        <h2>{{ musical.title }}</h2>
-        
-        {% if watched_musicals_showtimes[musical.musical_id] %}
-            <ul class="showtime-list">
-                {% for showtime in watched_musicals_showtimes[musical.musical_id] %}
-                    <li class="showtime-item">
-                        <p><strong>Date:</strong> {{ showtime.date }}</p>
-                        <p><strong>Start Time:</strong> {{ showtime.start_time }}</p>
-                        <p><strong>Notes:</strong> <span id="notes-text-{{ showtime.showtime_id }}">{{ showtime.notes if showtime.notes else "No notes yet" }}</span></p>
-                        
-                        <!-- Form to update notes -->
-                        <form action="{{ url_for('update_notes') }}" method="post" class="editable-field">
-                            <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
-                            <input type="hidden" name="showtime_id" value="{{ showtime.showtime_id }}">
-                            <textarea name="notes" id="notes-input-{{ showtime.showtime_id }}" style="display: none;">{{ showtime.notes }}</textarea>
-                            <button type="submit" class="save-btn" id="save-btn-{{ showtime.showtime_id }}" style="display: none;">Save</button>
-                            <button type="button" onclick="toggleEdit('{{ showtime.showtime_id }}')" class="edit-btn">
-                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                            </button>
-                        </form>
-                        
-                        <!-- Form to remove showtime from watched list -->
-                        <form action="{{ url_for('remove_from_watched') }}" method="post" class="remove-form">
-                            <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
-                            <input type="hidden" name="showtime_id" value="{{ showtime.showtime_id }}">
-                            <button type="submit" class="wishlist-remove-btn">Remove from Watched</button>
-                        </form>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No showtimes watched for this musical yet.</p>
-        {% endif %}
+<section id="wishlist">
+    <h1>Manage Watched Showtimes</h1>
+    <div class="wishlist-list">
+        {% for musical in watched_musicals %}
+            <div class="wishlist-card">
+                <h3 class="wishlist-title">
+                    <a href="{{ url_for('view_broadway_show', id=musical.musical_id) }}">{{ musical.title }}</a>
+                </h3>
+                {% if watched_musicals_showtimes[musical.musical_id] %}
+                    <ul class="showtime-grid">
+                        {% for showtime in watched_musicals_showtimes[musical.musical_id] %}
+                            <li class="showtime-item">
+                                <p><strong>Date:</strong> {{ showtime.date }}</p>
+                                <p><strong>Start Time:</strong> {{ showtime.start_time }}</p>
+                                <p><strong>Notes:</strong> <span id="notes-text-{{ showtime.showtime_id }}">{{ showtime.notes if showtime.notes else "No notes yet" }}</span></p>
+                                
+                                <!-- Form to update notes -->
+                                <form action="{{ url_for('update_notes') }}" method="post" class="editable-field">
+                                    <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
+                                    <input type="hidden" name="showtime_id" value="{{ showtime.showtime_id }}">
+                                    <textarea name="notes" id="notes-input-{{ showtime.showtime_id }}" style="display: none;">{{ showtime.notes }}</textarea>
+                                    <button type="submit" class="save-btn" id="save-btn-{{ showtime.showtime_id }}" style="display: none;">Save</button>
+                                    <button type="button" onclick="toggleEdit('{{ showtime.showtime_id }}')" class="edit-btn">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </button>
+                                </form>
+                                
+                                <!-- Form to remove showtime from watched list -->
+                                <form action="{{ url_for('remove_from_watched') }}" method="post" class="remove-form">
+                                    <input type="hidden" name="musical_id" value="{{ musical.musical_id }}">
+                                    <input type="hidden" name="showtime_id" value="{{ showtime.showtime_id }}">
+                                    <button type="submit" class="wishlist-remove-btn">Remove from Watched</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No showtimes watched for this musical yet.</p>
+                {% endif %}
+            </div>
+        {% endfor %}
     </div>
-{% endfor %}
+</section>
 
 <script>
     function toggleEdit(showtimeId) {

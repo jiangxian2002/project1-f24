@@ -102,7 +102,7 @@ def search():
     return render_template('home.html', musicals=musicals, search_entry=search_entry_ori)
 
 
-@app.route('/broadway_show', methods=['GET'])
+@app.route('/broadway_show', methods=['GET', 'POST'])
 def view_broadway_show():
     musical_id = request.args.get("id")
     user_id = session.get('user_id')
