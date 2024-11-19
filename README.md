@@ -32,11 +32,11 @@ Password: amy
 
 **ACCOUNT 2:**
 
-Username: ABC
+Username: abc
 
 Email: abc@123.com
 
-Password: ABC
+Password: abc
 
 
 **ACCOUNT 3:**
