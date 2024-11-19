@@ -20,12 +20,17 @@ DB_SERVER="your_server"
 
 
 ## Example Credentials
+
+**ACCOUNT 1:**
+
 Username: amy
 
 Email: amy@123.com
 
-Password: amy
+Password: may
 
+
+**ACCOUNT 2:**
 
 Username: ABC
 
@@ -33,6 +38,8 @@ Email: abc@123.com
 
 Password: ABC
 
+
+**ACCOUNT 3:**
 
 Username: test
 
