@@ -7,8 +7,7 @@ The application is a social platform where users can share, review, and discuss 
 
 
 ## Link to Website
-http://35.185.108.243:8111/
-
+[http://35.185.108.243:8111/](http://35.185.108.243:8111/)
 
 ## How to Run
 Use .env file and dotenv module to load database credentials
@@ -57,15 +56,30 @@ List of musicals that can be clicked on to display more details
 Searches for titles that contain the search string (case ignored)
 
 #### Musical Page 
-<img width="1510" alt="image" src="https://github.com/user-attachments/assets/15a1e73b-7535-4905-964b-2417c49fde9f">
+<img width="1510" alt="image" src="https://github.com/user-attachments/assets/e6c0eb44-263a-4252-b2f7-b6b785aa446d">
 
-<img width="1512" alt="image" src="https://github.com/user-attachments/assets/a4f53f77-9e7c-4d4b-a162-a826ec3dc96f">
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/1a1e5ed2-8bb8-4537-bd3f-0b22b3484d2a">
+
 Links to theatres and cast members
 
-Require login to comment
+Requires login to comment
 
+#### Theatre Page 
+<img width="1510" alt="image" src="https://github.com/user-attachments/assets/e6b13049-f2b4-4435-a1cf-b89fd5b8076c">
+Links back to musicals
+
+#### Cast Member Page 
+Links back to musicals
 
 ### User Features with Login
 
+#### Register for an account 
+<img width="1508" alt="image" src="https://github.com/user-attachments/assets/340b5c93-be55-46ec-8f56-06a5c045c046">
+Users can register for an account
 
+#### Login with account credentials
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/8e01f625-e334-4cd6-9b3b-d87ac303d810">
+
+#### Homepage after login
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/e060b09f-e303-414e-9c9d-35710937cefc">
 
