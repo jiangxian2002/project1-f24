@@ -159,3 +159,7 @@ Can now post comments
 <img width="886" alt="image" src="https://github.com/user-attachments/assets/2fbd4b80-3ab8-4a14-bb97-dfd31322bc25">
 
 
+
+
+## ER Diagram
+<img width="649" alt="image" src="https://github.com/user-attachments/assets/953936e2-03c0-4c67-b749-b7a2d99dc137">
