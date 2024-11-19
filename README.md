@@ -111,7 +111,7 @@ Links to each profile
 Display some basic information on that user 
 
 
-#### My Wishlist Page
+#### My Wishlist page
 <img width="1505" alt="image" src="https://github.com/user-attachments/assets/d0f8a01c-d14c-4304-9a75-d8cc591db2a9">
 <img width="1512" alt="image" src="https://github.com/user-attachments/assets/4a87c707-01b0-4920-881c-49039cdb19da">
 
@@ -128,5 +128,22 @@ We want to build a recommendation system, which will suggest musicals to every u
 
 
 
+#### Manage Showtimes
+<img width="1502" alt="image" src="https://github.com/user-attachments/assets/4b2fc51e-85de-44fd-94bd-eda59e211818">
+
+Can delete showtimes or edit their notes for the showtimes that they have gone to
+<img width="382" alt="image" src="https://github.com/user-attachments/assets/971e5068-3833-4e05-94cb-1b14e3ad8ff7">
+<img width="382" alt="image" src="https://github.com/user-attachments/assets/d713a3b4-d4e8-4f80-8f82-054f2b2170bc">
+
+
+#### Musical page with login 
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/6b6bebaf-ee53-4cd8-9d35-2f5672acc20b">
+Add / remove wishlist functionality appears
+<img width="880" alt="image" src="https://github.com/user-attachments/assets/124013f3-19aa-4014-9b4c-b087f531de65">
+Add (with or without notes) / remove showtime functionality appears
+
+<img width="884" alt="image" src="https://github.com/user-attachments/assets/ea873d65-dbc6-41b4-ba7c-65f1df65ff4d">
+Can now post comments
+<img width="886" alt="image" src="https://github.com/user-attachments/assets/2fbd4b80-3ab8-4a14-bb97-dfd31322bc25">
 
 
