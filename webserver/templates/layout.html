@@ -27,22 +27,25 @@
             <div class="logo">
                 <a href="/">Revue Broadway</a>
             </div>
-            <div class="nav-container">
-                <ul class="nav-links">
-                    {% if session["user_id"] %}
-                        <li><a href="/manage_showtimes" class="nav-link"><i class="fa-solid fa-masks-theater"></i> Manage Showtimes </a></li>
-                        <li><a href="/manage_wishlist" class="nav-link"><i class="fa fa-heart"></i> Manage Wishlist</a></li>
-                        <li><a href="/manage_social" class="nav-link"><i class="fa fa-users"></i> Manage Social</a></li>
-                        <li><a href="/account" class="nav-link"><i class="fa fa-user"></i> Account</a></li>
-                    {% else %}
-                        <li><a href="/login" class="nav-link">Log In</a></li>
-                        <li><a href="/register" class="nav-link">Register</a></li>
-                    {% endif %}
-                </ul>
-            </div>
+            <!-- drop down menu -->
             <button id="hamburger">
                 <i class="fa-solid fa-bars"></i>
             </button>
+            <div class="dropdown">
+                <div class="dropdown-content">
+                    <ul class="nav-links">
+                        {% if session["user_id"] %}
+                            <li><a href="/manage_showtimes" class="nav-link"><i class="fa-solid fa-masks-theater"></i> Manage Showtimes </a></li>
+                            <li><a href="/manage_wishlist" class="nav-link"><i class="fa fa-heart"></i> Manage Wishlist</a></li>
+                            <li><a href="/manage_social" class="nav-link"><i class="fa fa-users"></i> Manage Social</a></li>
+                            <li><a href="/account" class="nav-link"><i class="fa fa-user"></i> Account</a></li>
+                        {% else %}
+                            <li><a href="/login" class="nav-link">Log In</a></li>
+                            <li><a href="/register" class="nav-link">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
         </nav>
     </header>
 

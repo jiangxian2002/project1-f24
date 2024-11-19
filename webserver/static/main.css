@@ -2,8 +2,14 @@
 # General
 --------------------------------------------------------------*/
 
+:root {
+    --primary-color: #1a73e8;
+    --white-color: #ffffff;
+    --grey-color: #f9f9f9;
+    --hover-color: #f1f1f1;
+    --hover-text-color: #ffd700;
+}
 
-/* General Styles */
 * {
     margin: 0;
     padding: 0;
@@ -12,14 +18,14 @@
 }
 
 body {
-    background-color: #f9f9f9;
+    background-color: var(--grey-color);
     color: #333;
 }
 
 /* Header */
 header {
-    background-color: #1a73e8;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--white-color);
     padding: 15px 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -28,42 +34,26 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+}
+
+.logo {
+    color: white;
+    flex-grow: 1;
 }
 
 .logo a {
-    color: white;
     font-size: 1.5em;
     font-weight: 600;
     text-decoration: none;
-}
-
-.nav-container {
-    display: flex;
-    gap: 15px;
-}
-
-.nav-links {
-    list-style-type: none;
-    display: flex;
-    gap: 15px;
-}
-
-.nav-link {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.nav-link:hover {
-    color: #ffd700;
 }
 
 /* Hamburger Menu */
 #hamburger {
     background: none;
     border: none;
-    color: white;
-    display: none; /* Hidden by default, visible in mobile */
+    color: var(--white-color);
+    display: block;
 }
 
 #hamburger i {
@@ -75,13 +65,74 @@ main {
     padding: 20px;
 }
 
-.content-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+/* Dropdown Menu */
+.dropdown-content {
+    background-color: var(--white-color);
+    color: var(--primary-color);
     border-radius: 8px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 0;
+    z-index: 1;
+    overflow: hidden;
+    top: 100%;
+    right: 0;
+    position: absolute;
+    display: none;
+}
+
+.dropdown-content.visible {
+    display: block;
+    transform: translateY(0);
+}
+
+/* Links in the Dropdown */
+.nav-link {
+    background-color: var(--white-color);
+    color: var(--primary-color);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: 500;
+    text-align: left;
+}
+
+.nav-link:hover {
+    background-color: var(--hover-color);
+    color: var(--hover-text-color);
+}
+
+/* For larger screens */
+@media (min-width: 768px) {
+    #hamburger {
+        display: none;
+    }
+    
+    .dropdown-content {
+        display: flex;
+        position: relative;
+        top: unset;
+        right: unset;
+        background: none;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 15px;
+    }
+
+    .nav-link {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        padding: 10px 15px;
+    }
+
+    .dropdown-content .nav-link:hover {
+        background: none;
+        color: var(--hover-text-color); 
+    }
 }
 
 /* Footer */
@@ -96,27 +147,6 @@ footer {
 
 footer p {
     margin: 0;
-}
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-    #hamburger {
-        display: inline; /* Show hamburger menu on mobile */
-    }
-    .nav-container {
-        display: none;
-    }
-
-    /* Dropdown menu styles */
-    .nav-dropdown {
-        display: flex;
-        flex-direction: column;
-        background-color: #1a73e8;
-        position: absolute;
-        top: 60px;
-        width: 100%;
-        padding: 10px 0;
-    }
 }
 
 ul {
@@ -134,7 +164,7 @@ img {
 }
 
 /*--------------------------------------------------------------
-# Nav Bar
+# Navigation Bar Styles
 --------------------------------------------------------------*/
 nav {
     padding: 20px;
@@ -154,32 +184,11 @@ nav {
     display: none;
 }
 
-.nav-links a {
-    color: var(--white-color);
-}
-
-.nav-link {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 15px 0px 15px 0px;
-}
-
 #hamburger {
     border: none;
     outline: none;
     background-color: transparent;
     color: white
-}
-
-.nav-container.drop {
-    display: block;
-    background-color: var(--primary-color);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    color: var(--white-color);
-    padding: 20px;
 }
 
 /* Search Bar */
@@ -229,7 +238,7 @@ nav {
 
 
 /*--------------------------------------------------------------
-# Card Styles
+# Card Styles for Home Page
 --------------------------------------------------------------*/
 
 
@@ -335,7 +344,7 @@ nav {
 
 .form-button{
     background: var(--primary-color);
-    color: white;
+    color: black;
 }
 
 .form-input:hover {
@@ -344,13 +353,12 @@ nav {
 }
 
 form button:hover {
-    color: white;
     box-shadow: 0 0 0 1px rgb(0 0 0 / 20%);
     transition: all 200ms ease-out;
 }
 
 /*--------------------------------------------------------------
-# Home
+# Home Page Layout
 --------------------------------------------------------------*/
 .listing-grid {
     display: grid;
@@ -595,9 +603,81 @@ label[for=image-entry] {
     color: #333;
 }
 
-/*--------------------------------------------------------------
-# Edit Service
---------------------------------------------------------------*/
+/* Grid layout for showtimes */
+.showtime-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Styling each showtime as a card */
+.showtime-item-b {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.showtime-item-b p {
+    margin: 5px 0;
+    font-size: 1em;
+    color: #333;
+}
+
+.showtime-actions {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.notes-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.9em;
+    text-align: center;
+
+}
+
+.btn {
+    padding: 6px 12px;
+    font-size: 0.9em;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    width: 80%; /* Match width with notes input */
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #155a9b;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #b02a37;
+}
+
+
 
 
 /*--------------------------------------------------------------
@@ -812,7 +892,9 @@ label[for=image-entry] {
 }
 
 /*--------------------------------------------------------------
-# Account Details Full-Screen Card Layout
+```css
+/*--------------------------------------------------------------
+# Account Details Full-Screen Card Layout for User Profile
 --------------------------------------------------------------*/
 
 #account-details-user {

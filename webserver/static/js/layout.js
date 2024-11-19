@@ -14,11 +14,20 @@ const searchValidate = () => {
 }
 
 // Adding event listener on hamburger to show navbar
-hamburger.addEventListener('click', (e) => {
-    e.preventDefault();
-    navDropdown.append(navContain);
-    navContain.classList.toggle('drop');
+document.addEventListener("DOMContentLoaded", () => {
+    const hamburger = document.getElementById("hamburger");
+    const dropdownContent = document.querySelector(".dropdown-content");
+
+    hamburger.addEventListener("click", () => {
+        dropdownContent.classList.toggle("visible");
+    });
+    document.addEventListener("click", (event) => {
+        if (!dropdownContent.contains(event.target) && !hamburger.contains(event.target)) {
+            dropdownContent.classList.remove("visible");
+        }
+    });
 });
+
 
 // Event listener for search
 searchButton.addEventListener('click', (e)  => {
