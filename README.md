@@ -5,7 +5,7 @@ The application is a social platform where users can share, review, and discuss 
 
 
 ## Link to Website
-[http://35.185.108.243:8111/](http://35.185.108.243:8111/)
+[http://35.185.108.243:8111/](http://35.185.108.243:8111/) (no longer active)
 
 ## How to Run
 Use a .env file and dotenv module to load database credentials
